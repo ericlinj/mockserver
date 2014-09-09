@@ -22,9 +22,10 @@ ajaxmocker 分为服务端与客户端
   - 基于配置与接口数据，对所有本地的ajax请求的拦截与转发（到mockserver）
 
 ## 后端开发同学配置接口：
-1. 本地配置host，
+1. 本地配置host
 
-      mockserver.sogou-inc.com  10.134.70.205
+
+         mockserver.sogou-inc.com  10.134.70.205
 
 
   `jpassport要求配置sogou-inc.com子域名`
@@ -51,6 +52,8 @@ component下安装方式
           ...
           "ericlinj/mocker": "*"
         }
+        
+        
 
 2. 给出一个全局的oper-mocker参数：`0-关闭；1-开启`，建议通过后端的maven profile配置给出,仅仅在dev环境下给出，防止影响qa和product环境访问
 3. spa启动伊始进行初始化
