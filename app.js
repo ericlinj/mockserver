@@ -90,7 +90,7 @@ if ('development' === env) {
       var cookiename = cookieJp.match(/username:(\w+@sogou-inc.com),/i)[1];
       console.info("jpassport cookie user: " + cookiename);
 
-      app.locals.openmocker = 0;
+      app.locals.openmocker = 1;
 
       db.User.find({
         where: { "user_name": cookiename }
