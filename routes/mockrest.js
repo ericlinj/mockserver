@@ -28,8 +28,15 @@ exports.doMock = function(req, res) {
     .success(function(mock_detail) {
       if (mock_detail) {
         var mockJson = JSON.minify(mock_detail.mock_json);
-        var mockJsonObj = JSON.parse(mockJson);
-        res.jsonp(mockJsonObj);
+        try {
+          var mockJsonObj = JSON.parse(mockJson);
+          res.jsonp(mockJsonObj);
+        } catch (e) {
+          logger.error(e);
+          res.jsonp({
+            "ERROR": "json格式错误"
+          });
+        }
       }
     })
 
