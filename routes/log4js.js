@@ -16,6 +16,7 @@ exports.error = function(err) {
 exports.trace = function(err) {
   logger.trace(err);
 }
+
 exports.debug = function(err) {
   logger.debug(err);
 }

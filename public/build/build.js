@@ -19092,7 +19092,7 @@ $(function() {
   if (window.openmocker === 1) {
     new Mocker().start();
   } else {
-    console.info("not support mocker")
+    console.info("not support mocker!!!")
   }
 
   var router = new Router()

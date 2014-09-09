@@ -1,1 +1,6 @@
-public/*
+**/.idea/**
+**/.git/**
+**/.tmp/**
+**/public/**
+*.md
+*.ejs
