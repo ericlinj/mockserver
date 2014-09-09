@@ -1,0 +1,42 @@
+<% include header %>
+
+<div class="col-md-2 subnav-left">
+  <h3>新建项目</h3>
+</div>
+
+
+<div class="content">
+  <div class="container">
+    <div class="job">
+      <div class="col-md-10 layout-main">
+        <form class="form-horizontal" action="/project/doAdd" method="post">
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">项目名称</label>
+            <div class="col-md-5 ui-form-item">
+              <input class="form-control" name="name" placeholder="请输入项目名称">
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=100字符</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">项目描述</label>
+            <div class="col-md-5 ui-form-item">
+              <textarea class="form-control" rows="8" name="mock_json" id="job_desc" placeholder="请输入项目描述"></textarea>
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=1000字符</span>
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ <% include footer %>

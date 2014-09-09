@@ -1,0 +1,26 @@
+<% include header %>
+ <h1>Mocks</h1>
+    <table >
+        <tr>
+            <th>url</th>
+            <th>button</th>
+        </tr>
+
+        <% urls.forEach(function(url) { %>
+            <tr>
+                    <td><%=url%></td>
+                    <td>
+                      <input type="button" class="mockButton" data-url='<%=url%>' value="viewJsonObj"  />
+                    </td>
+            </tr>
+        <% }) %>
+
+            <tr class="demo-jsonrst">
+                    <td>jsonObj</td>
+                    <td>
+                        <div id="mockjson"></div>
+                    </td>
+            </tr>
+
+    </table>
+<% include footer %>

@@ -1,0 +1,21 @@
+{
+  "development": {
+    "host": "127.0.0.1",
+    "db": "mockserver",
+    "username": "ericlixj",
+    "pwd": "mypasswd",
+    "port": "3306",
+    "maxConnections": 5,
+    "maxIdleTime": 30
+  },
+
+  "production": {
+    "host": "10.134.70.205",
+    "db": "stars",
+    "username": "bard",
+    "pwd": "bard",
+    "port": "3306",
+    "maxConnections": 5,
+    "maxIdleTime": 30
+  }
+}

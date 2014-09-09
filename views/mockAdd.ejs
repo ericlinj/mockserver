@@ -1,0 +1,72 @@
+<% include header %>
+
+<div class="col-md-2 subnav-left">
+  <h3>新建接口</h3>
+</div>
+
+
+<div class="content">
+  <div class="container">
+    <div class="job">
+      <div class="col-md-10 layout-main">
+        <form class="form-horizontal" action="/mock/doAdd" method="post">
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">所属项目</label>
+            <div class="col-md-5 ui-form-item">
+              <select name="project_id">
+                <option value="1">mars</option>
+              </select>
+
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">接口URL</label>
+            <div class="col-md-5 ui-form-item">
+              <input class="form-control" name="url" placeholder="请输入接口URL">
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=100字符</span>
+            </div>
+          </div>
+
+          <div class="form-group" >
+            <label class="col-md-2 control-label">MOCKJSON</label>
+            <div class="col-md-5 ui-form-item" id="textarea-mock-json">
+              <textarea class="form-control" rows="8" name="mock_json" id="job_desc" placeholder="请输入MOCKJSON"></textarea>
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=10000字符</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">是否启动mock</label>
+            <div class="col-md-5 ui-form-item">
+              <select name="is_mock">
+                <option value="1">是</option>
+                <option value="0">否</option>
+              </select>
+
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <div class="col-md-3 col-md-push-2">
+              <button id='btn-submit' type="submit" class="ok btn btn-secondary">提 交</button>&nbsp;&nbsp;
+              <button type="reset" class="cancel btn btn-default">取 消</button>
+            </div>
+          </div>
+
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ <% include footer %>

@@ -1,0 +1,15 @@
+{
+  "name": "boot",
+  "description": "bootstrap app",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ],
+"local": [
+    "mocker","mock"
+  ],
+  "dependencies": {
+    "component/jquery": "*",
+    "ianstormtaylor/router": "*"
+  }
+}

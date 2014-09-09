@@ -1,0 +1,60 @@
+<% include header %>
+  <div class="mainnav">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2 subnav-left">
+          <a class="btn btn-outline-inverse btn-lg btn-block" href="/mock/preAdd">新建接口</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="container task-rows"><div class="row">
+      <div class="portlet">
+        <form class="form-inline " method="get" action="/mock/list">
+          <div class="input-group col-md-3">
+            <input type="text" name="q_url" class="form-control" placeholder="输入接口url" value="<%=q_url%>">
+            <span class="input-group-btn">
+            <button class="btn btn-secondary" type="submit">搜 索</button>
+            </span>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-9">
+        <div class="portlet-body">
+          <% if (details.length > 0) { %>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>url</th>
+                <th>mockjson</th>
+                <th>是否mock</th>
+                <th>创建时间</th>
+                <th>checkMockJson</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% details.forEach(function(item) { %>
+              <tr class="">
+                <td><%= item.id %></td>
+                <td><a href="/mock/preEdit/<%= item.id %>"><%= item.url %></a></td>
+                <td><%= item.mock_json %></td>
+                <td><%= item.is_mock_showStr %></td>
+                <td><%= item.create_time_showStr %></td>
+                <td>
+                      <input type="button" class="mockButton" data-url='<%=item.url%>' value="查看"  />
+                    </td>
+              </tr>
+              <% }) %>
+
+            </tbody>
+          </table>
+          <div id="mockjson"></div>
+          <% } else { %>
+          <p>没有数据</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <% include footer %>

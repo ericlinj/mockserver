@@ -1,0 +1,12 @@
+default:
+  server:
+    port: 3003
+  website:
+    title: '搜狗Mocker server'
+  wwwroot: 'data'
+  reservedWords: ''
+  mock_prefix_str: 'mockrest'
+  logger:
+    level:
+      development: 'DEBUG'
+      production: 'ERROR'

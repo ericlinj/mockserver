@@ -1,0 +1,11 @@
+{
+  "name": "stars",
+  "description": "stars app",
+  "paths": [
+    "js"
+  ],
+  "local": [
+    "boot"
+  ],
+  "dependencies": {}
+}

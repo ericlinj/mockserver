@@ -1,0 +1,11 @@
+{
+  "name": "appUtil",
+  "description": "util for lazy guy!",
+  "main": "index.js",
+  "scripts": ["index.js"],
+
+  "dependencies": {
+
+    "component/jquery": "*"
+  }
+}

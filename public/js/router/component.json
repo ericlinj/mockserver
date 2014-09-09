@@ -1,0 +1,15 @@
+{
+  "name": "myrouter",
+  "description": "router for app",
+  "main": "index.js",
+  "scripts": ["index.js"],
+  "local": [
+    "demo"
+  ],
+  "dependencies": {
+    "jashkenas/backbone": "*",
+    "component/querystring": "*",
+    "component/url": "*",
+    "component/jquery": "*"
+  }
+}

@@ -1,0 +1,170 @@
+/**
+ * Module dependencies.
+ */
+
+var express = require('express');
+var path = require('path');
+var favicon = require('static-favicon');
+var morgan = require('morgan');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var serveStatic = require('serve-static');
+
+
+//local dependencies
+var db = require('./models');
+var logger = require('./routes/log4js.js');
+
+//routes ...
+var mock = require('./routes/mock');
+var project = require('./routes/project');
+var mockrest = require('./routes/mockrest');
+// load global config
+var yaml = require('node-yaml-config');
+var CONFIG = yaml.load('./config/base.yaml');
+global.CONFIG = CONFIG;
+logger.info(global.CONFIG.mock_prefix_str)
+
+
+
+//express application
+var app = module.exports = express();
+var env = global.appEnv = CONFIG.ENV =app.get('env');
+
+// all environments
+app.set('port', CONFIG.server.port || process.env.PORT || 3003);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.use(morgan('dev'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+// parse application/json
+app.use(bodyParser.json());
+app.use(cookieParser('stars app'));
+app.use(session({
+  secret: 'keyboard cat',
+  key: 'sid',
+  proxy: true,
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(serveStatic(path.join(__dirname, 'public')));
+
+// env deal , there two env config to use
+// jpassport is sogou's oss ,use jpassport-sp cookie to store user
+app.locals.title = CONFIG.website.title;
+if ('development' === env) {
+  logger.setLevel(CONFIG.logger.level.development);
+  logger.configure({
+    appenders: [{
+      type: 'console'
+    }]
+  });
+
+  //development only
+  app.use(require('errorhandler')());
+  app.use(function(req, res, next) {
+    app.locals.openmocker = 1;//mock is support!
+    res.locals.username = 'ligangbj7466_dev111';
+    req.session.user = {
+      username: 'ligangbj7466_dev111'
+    };
+    next();
+  });
+} else if ('production' === env) {
+  //生产环境打印错误到指定目录下
+  logger.setLevel(CONFIG.logger.level.production);
+  logger.configure("./config/log4js.json", {});
+
+  app.use(function(req, res, next) {
+    if (req.cookies && req.cookies['jpassport-sp']) {
+      var cookieJp = req.cookies['jpassport-sp'];
+      var cookiename = cookieJp.match(/username:(\w+@sogou-inc.com),/i)[1];
+      console.info("jpassport cookie user: " + cookiename);
+
+      app.locals.openmocker = 0;
+
+      db.User.find({
+        where: { "user_name": cookiename }
+      }).success(function(user) {
+        if (user) {
+          res.locals.username = cookiename;
+          req.session.user = {
+            username: cookiename
+          };
+          next();
+        } else {
+          var err = new Error('not a valid user!');
+          err.status = 403;
+          next(err);
+        }
+      });
+    } else {
+      var err = new Error('not allowed!');
+      err.status = 403;
+      next(err);
+    }
+  });
+}
+
+//logic routers
+app.get('/', mock.list);
+app.get('/mock/preAdd', mock.preAdd);
+app.post('/mock/doAdd', mock.doAdd);
+app.get('/mock/list', mock.list);
+app.get('/mock/preEdit/:id', mock.preEdit);
+app.post('/mock/doEdit', mock.doEdit);
+app.get('/mock/doDel', mock.doDel);
+
+app.get('/project/preAdd', project.preAdd);
+app.post('/project/doAdd', project.doAdd);
+app.get('/project/doDel', project.doDel);
+app.get('/project/list', project.list);
+
+
+
+/////////////demo
+app.get('/demo', mock.demo);
+
+
+
+//////////////外部接口调用
+app.get('/mockrest/getMockDetails', mockrest.getMockDetails);
+app.get('/mockrest/*', mockrest.doMock);
+
+
+// 404
+app.get('*', function(req, res) {
+  res.render('404.ejs', {
+    title: 'No Found - ' + CONFIG.website.title,
+    username: req.session.user
+  });
+});
+
+
+//500 Error Handler.
+app.use(function (err, req, res, next) {
+  logger.error("Something went wrong: ", err);
+  res.render('500', {
+    status: err.status || 500,
+    error: err
+  });
+});
+
+//Sequelize
+db.sequelize.sync({
+  force: false
+}).complete(function(err) {
+  if (err) {
+    logger.error(err);
+    throw err;
+  } else {
+    app.listen(app.get('port'), function(e) {
+      logger.info('Express server start success and listening on port [' + app.get('port') + '] in [' + app.get("env") + '] mode.');
+    });
+  }
+});

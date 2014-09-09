@@ -1,0 +1,10 @@
+{
+  "appenders": [{
+    "type": "console"
+  }, {
+    "type": "dateFile",
+    "filename": "/usr/local/stars/logs/stars-errors.log",
+    "pattern": "-yyyy-MM-dd",
+    "alwaysIncludePattern": true
+  }]
+}

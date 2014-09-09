@@ -1,0 +1,14 @@
+{
+  "name": "jsoneditor",
+  "repo": "ericlinj/jsoneditor",
+  "description": "json editor from https://github.com/josdejong/jsoneditor",
+  "main": "jsoneditor.js",
+  "scripts": [
+    "jsoneditor.js"
+  ],
+  "styles": [
+    "jsoneditor.css"
+  ],
+  "dependencies": {
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "mock",
+  "description": "logic implement for mock",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ],
+
+  "dependencies": {
+    "component/jquery": "*",
+    "ericlinj/jsoneditor": "*",
+    "component/dialog": "*",
+    "ianstormtaylor/router": "*"
+  }
+}
