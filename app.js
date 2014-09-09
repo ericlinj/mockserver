@@ -10,6 +10,8 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var serveStatic = require('serve-static');
+var markdown=require('markdown-js');
+var fs = require('fs');
 
 
 //local dependencies
@@ -36,6 +38,13 @@ var env = global.appEnv = CONFIG.ENV =app.get('env');
 app.set('port', CONFIG.server.port || process.env.PORT);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.engine('md', function(path, options, fn){
+  fs.readFile(path, 'utf8', function(err, str){
+    if (err) return fn(err);
+    str = markdown.parse(str).toString();
+    fn(null, str);
+  });
+});
 app.use(morgan('dev'));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 // parse application/x-www-form-urlencoded
@@ -133,7 +142,9 @@ app.get('/logout', routes.logout);
 
 /////////////demo
 app.get('/demo', mock.demo);
-
+app.get('/md/intro',function(req,res){
+    res.render('intro.md',{layout:false});
+});
 
 
 //////////////外部接口调用

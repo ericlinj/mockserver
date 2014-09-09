@@ -6,9 +6,10 @@
     "index.js"
   ],
 "local": [
-    "mocker","mock"
+    "mock"
   ],
   "dependencies": {
+    "ericlinj/mocker": "*",
     "component/jquery": "*",
     "ianstormtaylor/router": "*"
   }

@@ -31,6 +31,7 @@ exports.list = function(context, next) {
       url: url,
       success: function(data) {
         jsonEditor.set(data);
+        // me.showDialog.modal();
         me.showDialog.show();
 
       }

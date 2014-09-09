@@ -43,6 +43,7 @@
     "semver": "^2.3.0",
     "sequelize": "^1.7.0",
     "serve-static": "^1.2.1",
+    "markdown-js": "*",
     "static-favicon": "^1.0.2"
   },
   "devDependencies": {

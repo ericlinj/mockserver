@@ -236,7 +236,7 @@ Dialog.prototype.show = function(){
   // overlay
   if (overlay) {
     overlay.show();
-    this._classes.add('modal');
+    //this._classes.add('modal');
   }
 
   // escape

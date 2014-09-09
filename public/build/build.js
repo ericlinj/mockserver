@@ -199,6 +199,262 @@ require.relative = function(parent) {
 
   return localRequire;
 };
+require.register("component-emitter/index.js", function(exports, require, module){
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks[event] = this._callbacks[event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  var self = this;
+  this._callbacks = this._callbacks || {};
+
+  function on() {
+    self.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks[event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks[event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks[event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks[event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+});
+require.register("ericlinj-mocker/index.js", function(exports, require, module){
+var $ = require('jquery');
+var Emitter = require('emitter');
+var mockDataCache = {};
+
+module.exports = Mocker;
+Emitter(Mocker.prototype);
+
+/////////////////////////constractor
+function Mocker() {
+  Emitter.call(this);
+  this.initMockDataCache();
+}
+
+Mocker.prototype.initMockDataCache = function() {
+  var mockurl = ["http://",
+    window.mocker_server_host,
+    ":",
+    window.mocker_server_port,
+    "/",
+    window.mocker_server_prefix,
+    "/",
+    "getMockDetails",
+    "?callback=?"
+  ].join("");
+
+  $.ajax({
+    url: mockurl,
+    data: {
+      project_id: 1
+    },
+    dataType: "jsonp",
+    success: function(details) {
+      $.each(details, function(index, detail) {
+        mockDataCache[detail.url] = detail.is_mock;
+      })
+    }
+  });
+};
+
+//////////////////
+Mocker.prototype.start = function() {
+  var me = this;
+  console.info("starting listening mocker-client....")
+  //intercept ajax and emit event
+  $(document).ajaxSend(function(event, xhr, opt) {
+    if (opt.dataType !== 'jsonp') {
+      var url = opt.url;
+      //validate ismock for every xhr!
+      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url], 10) === 1) {
+        xhr.abort();
+        me.emit("mockAjax", opt);
+      }
+    }
+
+  });
+
+  //catch event
+  me.on("mockAjax", function(opt) {
+    var mockurl = ["http://",
+      window.mocker_server_host,
+      ":",
+      window.mocker_server_port,
+      "/",
+      window.mocker_server_prefix,
+      "/",
+      opt.url,
+      "?callback=?"
+    ].join("");
+
+    var sucCallback = opt.success;
+
+    // console.info("create new xhr :" + mockurl);
+    $.ajax({
+      url: mockurl,
+      dataType: "jsonp",
+      success: function(data) {
+
+        sucCallback && sucCallback(data);
+      }
+    });
+  })
+}
+
+Mocker.prototype.stop = function() {
+  console.info("stop mocker-client")
+}
+
+});
 require.register("component-jquery/index.js", function(exports, require, module){
 /*!
  * jQuery JavaScript Library v1.11.1
@@ -11782,262 +12038,6 @@ Route.prototype.middleware = function (fn) {
 };
 
 });
-require.register("component-emitter/index.js", function(exports, require, module){
-
-/**
- * Expose `Emitter`.
- */
-
-module.exports = Emitter;
-
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks[event] = this._callbacks[event] || [])
-    .push(fn);
-  return this;
-};
-
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.once = function(event, fn){
-  var self = this;
-  this._callbacks = this._callbacks || {};
-
-  function on() {
-    self.off(event, on);
-    fn.apply(this, arguments);
-  }
-
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-
-  // all
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-
-  // specific event
-  var callbacks = this._callbacks[event];
-  if (!callbacks) return this;
-
-  // remove all handlers
-  if (1 == arguments.length) {
-    delete this._callbacks[event];
-    return this;
-  }
-
-  // remove specific handler
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks[event];
-
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-
-  return this;
-};
-
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks[event] || [];
-};
-
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-
-});
-require.register("mocker/index.js", function(exports, require, module){
-var $ = require('jquery');
-var Emitter = require('emitter');
-var mockDataCache = {};
-
-module.exports = Mocker;
-Emitter(Mocker.prototype);
-
-/////////////////////////constractor
-function Mocker() {
-  Emitter.call(this);
-  this.initMockDataCache();
-}
-
-Mocker.prototype.initMockDataCache = function() {
-  var mockurl = ["http://",
-    window.mocker_server_host,
-    ":",
-    window.mocker_server_port,
-    "/",
-    window.mocker_server_prefix,
-    "/",
-    "getMockDetails",
-    "?callback=?"
-  ].join("");
-
-  $.ajax({
-    url: mockurl,
-    data: {
-      project_id: 1
-    },
-    dataType: "jsonp",
-    success: function(details) {
-      $.each(details, function(index, detail) {
-        mockDataCache[detail.url] = detail.is_mock;
-      })
-    }
-  });
-};
-
-//////////////////
-Mocker.prototype.start = function() {
-  var me = this;
-  console.info("starting listening mocker-client....")
-  //intercept ajax and emit event
-  $(document).ajaxSend(function(event, xhr, opt) {
-    if (opt.dataType !== 'jsonp') {
-      var url = opt.url;
-      //validate ismock for every xhr!
-      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url], 10) === 1) {
-        xhr.abort();
-        me.emit("mockAjax", opt);
-      }
-    }
-
-  });
-
-  //catch event
-  me.on("mockAjax", function(opt) {
-    var mockurl = ["http://",
-      window.mocker_server_host,
-      ":",
-      window.mocker_server_port,
-      "/",
-      window.mocker_server_prefix,
-      "/",
-      opt.url,
-      "?callback=?"
-    ].join("");
-
-    var sucCallback = opt.success;
-
-    // console.info("create new xhr :" + mockurl);
-    $.ajax({
-      url: mockurl,
-      dataType: "jsonp",
-      success: function(data) {
-
-        sucCallback && sucCallback(data);
-      }
-    });
-  })
-}
-
-Mocker.prototype.stop = function() {
-  console.info("stop mocker-client")
-}
-
-});
 require.register("ericlinj-jsoneditor/jsoneditor.js", function(exports, require, module){
 /*!
  * jsoneditor.js
@@ -18939,7 +18939,7 @@ Dialog.prototype.show = function(){
   // overlay
   if (overlay) {
     overlay.show();
-    this._classes.add('modal');
+    //this._classes.add('modal');
   }
 
   // escape
@@ -19063,6 +19063,7 @@ exports.list = function(context, next) {
       url: url,
       success: function(data) {
         jsonEditor.set(data);
+        // me.showDialog.modal();
         me.showDialog.show();
 
       }
@@ -19136,6 +19137,14 @@ module.exports = '<div id="dialog" class="hide">\n  <div class="content">\n    <
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "boot/index.js");
+require.alias("ericlinj-mocker/index.js", "boot/deps/mocker/index.js");
+require.alias("ericlinj-mocker/index.js", "boot/deps/mocker/index.js");
+require.alias("component-emitter/index.js", "ericlinj-mocker/deps/emitter/index.js");
+
+require.alias("component-jquery/index.js", "ericlinj-mocker/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "ericlinj-mocker/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "component-jquery/index.js");
+require.alias("ericlinj-mocker/index.js", "ericlinj-mocker/index.js");
 require.alias("component-jquery/index.js", "boot/deps/jquery/index.js");
 require.alias("component-jquery/index.js", "boot/deps/jquery/index.js");
 require.alias("component-jquery/index.js", "component-jquery/index.js");
@@ -19180,14 +19189,6 @@ require.alias("yields-stop/index.js", "ianstormtaylor-router/deps/stop/index.js"
 require.alias("component-indexof/index.js", "ianstormtaylor-router/deps/indexof/index.js");
 
 require.alias("ianstormtaylor-router/lib/index.js", "ianstormtaylor-router/index.js");
-require.alias("mocker/index.js", "boot/deps/mocker/index.js");
-require.alias("mocker/index.js", "boot/deps/mocker/index.js");
-require.alias("component-emitter/index.js", "mocker/deps/emitter/index.js");
-
-require.alias("component-jquery/index.js", "mocker/deps/jquery/index.js");
-require.alias("component-jquery/index.js", "mocker/deps/jquery/index.js");
-require.alias("component-jquery/index.js", "component-jquery/index.js");
-require.alias("mocker/index.js", "mocker/index.js");
 require.alias("mock/index.js", "boot/deps/mock/index.js");
 require.alias("mock/index.js", "boot/deps/mock/index.js");
 require.alias("component-jquery/index.js", "mock/deps/jquery/index.js");
