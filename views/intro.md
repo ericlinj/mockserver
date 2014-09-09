@@ -28,7 +28,6 @@ ajaxmocker 分为服务端与客户端
          mockserver.sogou-inc.com  10.134.70.205
 
 
-  `jpassport要求配置sogou-inc.com子域名`
 2. 访问
 
   <http://mockserver.sogou-inc.com:3333>
