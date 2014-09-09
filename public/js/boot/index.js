@@ -16,6 +16,7 @@ $(function() {
     .on('/mock/preAdd', Mock.preAdd)
     .on('/mock/preEdit/:id', Mock.preEdit)
     .on('/mock/list', Mock.list)
+    .on('/', Mock.list)
     .start();
 
 });
