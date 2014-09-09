@@ -2,16 +2,20 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock_detail', {
-    id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-    },
     url: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: ''
     },
+    para_json: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     mock_json: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    remark: {
       type: DataTypes.TEXT,
       allowNull: true,
     },

@@ -2,10 +2,6 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('mock_project', {
-    id: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: true,

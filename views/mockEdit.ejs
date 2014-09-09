@@ -33,12 +33,32 @@
           </div>
 
           <div class="form-group" >
-            <label class="col-md-2 control-label">MOCKJSON</label>
-            <div class="col-md-5 ui-form-item" id="textarea-mock-json">
-              <textarea class="form-control" rows="8" name="mock_json" id="job_desc" placeholder="请输入MOCKJSON"><%=detail.mock_json%></textarea>
+            <label class="col-md-2 control-label">输入参数</label>
+            <div class="col-md-5 ui-form-item" id="textarea-para-json">
+              <textarea class="form-control" rows="8" name="para_json" id="job_desc" placeholder="请输入‘输入参数’"><%=detail.para_json%></textarea>
             </div>
             <div class="col-md-3">
               <span class="form-group-tip">*必填, <=10000字符</span>
+            </div>
+          </div>
+
+          <div class="form-group" >
+            <label class="col-md-2 control-label">‘输出数据’</label>
+            <div class="col-md-5 ui-form-item" id="textarea-mock-json">
+              <textarea class="form-control" rows="8" name="mock_json" id="job_desc" placeholder="请输入‘输出数据’"><%=detail.mock_json%></textarea>
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=10000字符</span>
+            </div>
+          </div>
+
+          <div class="form-group" >
+            <label class="col-md-2 control-label">备注</label>
+            <div class="col-md-5 ui-form-item" id="textarea-remark">
+              <textarea class="form-control" rows="4" name="remark"  placeholder="请输入‘备注’"><%=detail.remark%></textarea>
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=1000字符</span>
             </div>
           </div>
 

@@ -1,15 +1,17 @@
 default:
   server:
-    port: 3003
+    port: 3333
   website:
     title: '搜狗Mocker server'
   wwwroot: 'data'
   reservedWords: ''
-  mock_prefix_str: 'mockrest'
   logger:
     level:
       development: 'DEBUG'
       production: 'ERROR'
+
+  mocker_server_host: 'mockserver.sogou.com'
+  mocker_server_prefix: 'mockrest'
 
 
 

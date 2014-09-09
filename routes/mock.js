@@ -33,7 +33,9 @@ exports.preAdd = function(req, res) {
 exports.doAdd = function(req, res) {
   db.mock_detail.create({
     url: req.param('url') || '',
+    para_json: req.param('para_json') || '',
     mock_json: req.param('mock_json') || '',
+    remark: req.param('remark') || '',
     is_mock: req.param('is_mock') || '1',
     project_id: req.param('project_id'),
     creater: req.session.user.username,
@@ -62,7 +64,9 @@ exports.preEdit = function(req, res) {
 exports.doEdit = function(req, res) {
   db.mock_detail.update({
     url: req.param('url') || '',
+    para_json: req.param('para_json') || '',
     mock_json: req.param('mock_json') || '',
+    remark: req.param('remark') || '',
     is_mock: req.param('is_mock') || '1',
     project_id: req.param('project_id'),
     update_time: utcTime(getNowYYYYMMDDHHmmss()),
@@ -97,8 +101,6 @@ exports.list = function(req, res) {
       _.each(details, function(detail) {
         detail.create_time_showStr = new moment(utcTime(detail.create_time)).format('YYYY-MM-DD HH:mm:ss');
         detail.is_mock_showStr = parseInt(detail.is_mock, 10) === 1 ? '是' : '否';
-        // str.replace(/Microsoft/g, "W3School")
-        // detail.mock_json = detail.mock_json.replace(/\r\n/g , '\\r\\n');
       })
 
       logger.info(details);

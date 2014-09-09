@@ -15,8 +15,8 @@ JSON.minify = JSON.minify || require("node-json-minify");
 ///////提供mock数据，外部接口调用
 exports.doMock = function(req, res) {
   var url = req.url;
-  var prefixLen = global.CONFIG.mock_prefix_str.length + 2;
-  var mockUrl = url.substr(url.indexOf('/' + global.CONFIG.mock_prefix_str + '/') + prefixLen);
+  var prefixLen = global.CONFIG.mocker_server_prefix.length + 2;
+  var mockUrl = url.substr(url.indexOf('/' + global.CONFIG.mocker_server_prefix + '/') + prefixLen);
   mockUrl = mockUrl.substr(mockUrl, mockUrl.indexOf("?"))
   logger.info("mockUrl" + mockUrl);
 

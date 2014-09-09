@@ -28,7 +28,8 @@
               <tr>
                 <th>id</th>
                 <th>url</th>
-                <th>mockjson</th>
+                <th>输入</th>
+                <th>输出</th>
                 <th>是否mock</th>
                 <th>创建时间</th>
                 <th>checkMockJson</th>
@@ -39,6 +40,7 @@
               <tr class="">
                 <td><%= item.id %></td>
                 <td><a href="/mock/preEdit/<%= item.id %>"><%= item.url %></a></td>
+                <td><%= item.para_json %></td>
                 <td><%= item.mock_json %></td>
                 <td><%= item.is_mock_showStr %></td>
                 <td><%= item.create_time_showStr %></td>

@@ -24,7 +24,6 @@ var mockrest = require('./routes/mockrest');
 var yaml = require('node-yaml-config');
 var CONFIG = yaml.load('./config/base.yaml');
 global.CONFIG = CONFIG;
-logger.info(global.CONFIG.mock_prefix_str)
 
 
 
@@ -33,7 +32,7 @@ var app = module.exports = express();
 var env = global.appEnv = CONFIG.ENV =app.get('env');
 
 // all environments
-app.set('port', CONFIG.server.port || process.env.PORT || 3003);
+app.set('port', CONFIG.server.port || process.env.PORT);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(morgan('dev'));
@@ -57,6 +56,10 @@ app.use(serveStatic(path.join(__dirname, 'public')));
 // env deal , there two env config to use
 // jpassport is sogou's oss ,use jpassport-sp cookie to store user
 app.locals.title = CONFIG.website.title;
+
+app.locals.mocker_server_host = CONFIG.mocker_server_host;
+app.locals.mocker_server_port = CONFIG.server.port;
+app.locals.mocker_server_prefix = CONFIG.mocker_server_prefix;
 if ('development' === env) {
   logger.setLevel(CONFIG.logger.level.development);
   logger.configure({

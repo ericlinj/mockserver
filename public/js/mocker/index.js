@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var mocker_config = require('./mockerConfig').data;
 var Emitter = require('emitter');
 var mockDataCache = {};
 
@@ -14,11 +13,11 @@ function Mocker() {
 
 Mocker.prototype.initMockDataCache = function() {
   var mockurl = ["http://",
-    mocker_config.mocker_server_host,
+    window.mocker_server_host,
     ":",
-    mocker_config.mocker_server_port,
+    window.mocker_server_port,
     "/",
-    mocker_config.mocker_server_prefix,
+    window.mocker_server_prefix,
     "/",
     "getMockDetails",
     "?callback=?"
@@ -31,7 +30,7 @@ Mocker.prototype.initMockDataCache = function() {
     },
     dataType: "jsonp",
     success: function(details) {
-      $.each(details , function(index , detail){
+      $.each(details, function(index, detail) {
         mockDataCache[detail.url] = detail.is_mock;
       })
     }
@@ -47,7 +46,7 @@ Mocker.prototype.start = function() {
     if (opt.dataType !== 'jsonp') {
       var url = opt.url;
       //validate ismock for every xhr!
-      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url] , 10) === 1) {
+      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url], 10) === 1) {
         xhr.abort();
         me.emit("mockAjax", opt);
       }
@@ -58,11 +57,11 @@ Mocker.prototype.start = function() {
   //catch event
   me.on("mockAjax", function(opt) {
     var mockurl = ["http://",
-      mocker_config.mocker_server_host,
+      window.mocker_server_host,
       ":",
-      mocker_config.mocker_server_port,
+      window.mocker_server_port,
       "/",
-      mocker_config.mocker_server_prefix,
+      window.mocker_server_prefix,
       "/",
       opt.url,
       "?callback=?"

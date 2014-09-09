@@ -11951,7 +11951,6 @@ Emitter.prototype.hasListeners = function(event){
 });
 require.register("mocker/index.js", function(exports, require, module){
 var $ = require('jquery');
-var mocker_config = require('./mockerConfig').data;
 var Emitter = require('emitter');
 var mockDataCache = {};
 
@@ -11966,11 +11965,11 @@ function Mocker() {
 
 Mocker.prototype.initMockDataCache = function() {
   var mockurl = ["http://",
-    mocker_config.mocker_server_host,
+    window.mocker_server_host,
     ":",
-    mocker_config.mocker_server_port,
+    window.mocker_server_port,
     "/",
-    mocker_config.mocker_server_prefix,
+    window.mocker_server_prefix,
     "/",
     "getMockDetails",
     "?callback=?"
@@ -11983,7 +11982,7 @@ Mocker.prototype.initMockDataCache = function() {
     },
     dataType: "jsonp",
     success: function(details) {
-      $.each(details , function(index , detail){
+      $.each(details, function(index, detail) {
         mockDataCache[detail.url] = detail.is_mock;
       })
     }
@@ -11999,7 +11998,7 @@ Mocker.prototype.start = function() {
     if (opt.dataType !== 'jsonp') {
       var url = opt.url;
       //validate ismock for every xhr!
-      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url] , 10) === 1) {
+      if (mockDataCache && mockDataCache[url] && parseInt(mockDataCache[url], 10) === 1) {
         xhr.abort();
         me.emit("mockAjax", opt);
       }
@@ -12010,11 +12009,11 @@ Mocker.prototype.start = function() {
   //catch event
   me.on("mockAjax", function(opt) {
     var mockurl = ["http://",
-      mocker_config.mocker_server_host,
+      window.mocker_server_host,
       ":",
-      mocker_config.mocker_server_port,
+      window.mocker_server_port,
       "/",
-      mocker_config.mocker_server_prefix,
+      window.mocker_server_prefix,
       "/",
       opt.url,
       "?callback=?"
@@ -12036,14 +12035,6 @@ Mocker.prototype.start = function() {
 
 Mocker.prototype.stop = function() {
   console.info("stop mocker-client")
-}
-
-});
-require.register("mocker/mockerConfig.js", function(exports, require, module){
-exports.data = {
-  "mocker_server_host": "mockserver.sogou.com",
-  "mocker_server_port": "3003",
-  "mocker_server_prefix": "mockrest"
 }
 
 });
@@ -19190,7 +19181,6 @@ require.alias("component-indexof/index.js", "ianstormtaylor-router/deps/indexof/
 
 require.alias("ianstormtaylor-router/lib/index.js", "ianstormtaylor-router/index.js");
 require.alias("mocker/index.js", "boot/deps/mocker/index.js");
-require.alias("mocker/mockerConfig.js", "boot/deps/mocker/mockerConfig.js");
 require.alias("mocker/index.js", "boot/deps/mocker/index.js");
 require.alias("component-emitter/index.js", "mocker/deps/emitter/index.js");
 
