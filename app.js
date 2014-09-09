@@ -17,6 +17,7 @@ var db = require('./models');
 var logger = require('./routes/log4js.js');
 
 //routes ...
+var routes = require('./routes');
 var mock = require('./routes/mock');
 var project = require('./routes/project');
 var mockrest = require('./routes/mockrest');
@@ -128,7 +129,7 @@ app.post('/project/doAdd', project.doAdd);
 app.get('/project/doDel', project.doDel);
 app.get('/project/list', project.list);
 
-
+app.get('/logout', routes.logout);
 
 /////////////demo
 app.get('/demo', mock.demo);
