@@ -1,19 +1,19 @@
 {
-  "name": "stars.io",
-  "descrition": "The server for stats",
+  "name": "mockserver.io",
+  "descrition": "The server for ajax json mock",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.1.0",
   "keywords": [
     "static",
     "component"
   ],
-  "homepage": "http://stars.io",
+  "homepage": "http://mockserver.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/airballoon/stars.git"
+    "url": "https://github.com/ericlinj/mockserver.git"
   },
   "bugs": {
-    "url": "https://github.com/airballoon/stars/issues"
+    "url": "https://github.com/ericlinj/mockserver/issues"
   },
   "licenses": "MIT",
   "engines": {
