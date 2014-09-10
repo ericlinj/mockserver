@@ -50,7 +50,7 @@ component下安装方式:
         "dependencies": {
           "ericlinj/mocker": "*"
         }
-        
+
 
 2. 给出一个全局的oper-mocker参数：`0-关闭；1-开启`，建议通过后端的maven profile配置给出,仅仅在dev环境下给出，防止影响qa和product环境访问
 3. spa启动伊始进行初始化
