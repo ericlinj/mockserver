@@ -59,6 +59,7 @@ exports.list = function(context, next) {
   $(".mockButton").click(function() {
     var url = $(this).attr("data-url");
     $.ajax({
+      type: "POST",
       url: url,
       success: function(data) {
         jsonEditor.set(data);

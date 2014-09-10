@@ -75,16 +75,45 @@ component下安装方式:
 
 
 
-3. spa启动伊始进行初始化
+3. spa启动伊始进行初始化,需要在mock启动的回调中加入原有的启动脚本
 
 
         var Mocker = require('mocker');
-            if (parseInt(window.openmocker , 10) === 1) {
-            new Mocker().start();
-          }
+            $(function () {
+              //init mocker
+              if(window.open_mocker && parseInt(window.open_mocker , 10) === 1){
+                new Mocker().start(function(){
+                  //your stuff ,such as boot,cache loading
+                  router.init();
+                });
+              }else{
+                  //your stuff ,such as boot,cache loading
+                  router.init();
+            }
+              })
 
 
 4. 启动client mocker完成
 5. 对于不希望mock的ajax请求可以在mockserver中进行配置处理，配置完成后需要在client端浏览器属刷新页面生效
+
+# 注意事项
+1. mocker有缺陷，只能针对ajax的success作为options的filed进行处理，对于回调方式的sucess不支持，后续看有没有办法做个兼容处理。
+    * 支持
+
+
+
+      $.ajax({
+        ....
+        success :function(res){
+        }
+      })
+
+     * 不支持
+
+
+      $.ajax({}).success(function(){
+        //....
+      })
+
 
 
