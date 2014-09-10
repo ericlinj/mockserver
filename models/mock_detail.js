@@ -7,6 +7,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: ''
     },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: ''
+    },
     para_json: {
       type: DataTypes.TEXT,
       allowNull: true,

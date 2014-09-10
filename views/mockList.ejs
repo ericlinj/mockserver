@@ -27,6 +27,7 @@
             <thead>
               <tr>
                 <th>id</th>
+                <th>标题</th>
                 <th>url</th>
                 <th>输入</th>
                 <th>输出</th>
@@ -39,6 +40,7 @@
               <% details.forEach(function(item) { %>
               <tr class="">
                 <td><%= item.id %></td>
+                <td><%= item.title %></td>
                 <td><a href="/mock/preEdit/<%= item.id %>"><%= item.url %></a></td>
                 <td><%= item.para_json %></td>
                 <td><%= item.mock_json %></td>

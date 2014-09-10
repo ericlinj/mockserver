@@ -23,6 +23,16 @@
           </div>
 
           <div class="form-group">
+            <label class="col-md-2 control-label">接口标题</label>
+            <div class="col-md-5 ui-form-item">
+              <input class="form-control" name="title" value="<%=detail.title%>" placeholder="请输入接口标题">
+            </div>
+            <div class="col-md-3">
+              <span class="form-group-tip">*必填, <=100字符</span>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="col-md-2 control-label">接口URL</label>
             <div class="col-md-5 ui-form-item">
               <input class="form-control" name="url" value="<%=detail.url%>" placeholder="请输入接口URL">
@@ -31,6 +41,7 @@
               <span class="form-group-tip">*必填, <=100字符</span>
             </div>
           </div>
+
 
           <div class="form-group" >
             <label class="col-md-2 control-label">输入参数</label>

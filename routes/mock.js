@@ -33,6 +33,7 @@ exports.preAdd = function(req, res) {
 exports.doAdd = function(req, res) {
   db.mock_detail.create({
     url: req.param('url') || '',
+    title: req.param('title') || '',
     para_json: req.param('para_json') || '',
     mock_json: req.param('mock_json') || '',
     remark: req.param('remark') || '',
@@ -64,6 +65,7 @@ exports.preEdit = function(req, res) {
 exports.doEdit = function(req, res) {
   db.mock_detail.update({
     url: req.param('url') || '',
+    title: req.param('title') || '',
     para_json: req.param('para_json') || '',
     mock_json: req.param('mock_json') || '',
     remark: req.param('remark') || '',
