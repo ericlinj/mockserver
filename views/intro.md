@@ -30,7 +30,7 @@ ajaxmocker 分为服务端与客户端
   `jpassport要求配置sogou-inc.com子域名`
 2. 访问
 
-  <http://mockserver.sogou-inc.com:3333>
+  <http://mockserver.sogou-inc.com:81>
 
   `注意：如果提示没有权限，可以联系开发人员`
 
