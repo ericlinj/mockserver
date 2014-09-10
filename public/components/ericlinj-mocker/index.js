@@ -53,15 +53,13 @@ Mocker.prototype.initMockDataCache = function(callback) {
 
   $.ajax({
     url: mockurl,
-    data: {
-      project_id: 1
-    },
+    data: "project_id="+window.mocker_project_id,
     dataType: "jsonp",
     success: function(details) {
       $.each(details, function(index, detail) {
         mockDataCache[detail.url] = detail.is_mock;
       })
-      
+
       callback && typeof(callback) === "function" && callback();
     }
   });
@@ -85,10 +83,10 @@ Mocker.prototype.start = function(callback) {
     }
 
   });
-  
 
 
- 
+
+
 }
 
 Mocker.prototype.stop = function() {

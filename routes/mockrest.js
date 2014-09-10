@@ -27,7 +27,7 @@ exports.doMock = function(req, res) {
   })
     .success(function(mock_detail) {
       if (mock_detail) {
-        var mockJson = JSON.minify(mock_detail.mock_json);
+        var mockJson = JSON.minify(mock_detail.mock_json || mock_detail.result_json);
         try {
           var mockJsonObj = JSON.parse(mockJson);
           res.jsonp(mockJsonObj);
@@ -44,10 +44,16 @@ exports.doMock = function(req, res) {
 
 exports.getMockDetails = function(req, res) {
   var project_id = req.param('project_id');
-  db.mock_detail.findAll({
-    where: {
+  var whereObj = {};
+  if (project_id && parseInt(project_id, 10) === -1) {
+    whereObj = {}
+  }else{
+    whereObj = {
       'project_id': project_id
     }
+  }
+  db.mock_detail.findAll({
+    where: whereObj
   }).success(function(data) {
     res.jsonp(data);
   })

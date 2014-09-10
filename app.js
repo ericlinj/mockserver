@@ -70,6 +70,7 @@ app.locals.title = CONFIG.website.title;
 app.locals.mocker_server_host = CONFIG.mocker_server_host;
 app.locals.mocker_server_port = CONFIG.server.port;
 app.locals.mocker_server_prefix = CONFIG.mocker_server_prefix;
+app.locals.mocker_project_id = CONFIG.mocker_project_id;
 if ('development' === env) {
   logger.setLevel(CONFIG.logger.level.development);
   logger.configure({

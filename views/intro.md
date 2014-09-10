@@ -52,24 +52,26 @@ component下安装方式:
         }
 
 
-2. 给出一个全局的oper-mocker参数：`0-关闭；1-开启`，建议通过后端的maven profile配置给出,仅仅在dev环境下给出，防止影响qa和product环境访问
+2. 配置moker服务端的环境
 
 - 如果是独立的index-debug.html页面
-可以写死参数
+可以在调试页面写死如下参数
 
 
-        window.open_mocker =1;
-        window.mocker_server_host = "mockserver.sogou-inc.com";
-        window.mocker_server_port = "81";
-        window.mocker_server_prefix = "mockrest";
+        window.open_mocker =1;//是否开启mocker
+        window.mocker_server_host = "mockserver.sogou-inc.com";//mocker服务域名
+        window.mocker_server_port = "81";//端口
+        window.mocker_server_prefix = "mockrest";//mock请求的url的prefix
+        window.mocker_project_id = "1";//请求mock的项目id，如需要不区分项目可以使用-1
 
-- 如果和已有的jsp页面整合，可以来自后台参数，形如：
+- 如果需要和已有的jsp页面整合，可以通过后台传递参数
 
 
         window.open_mocker = "<%=open_mocker%>";
         window.mocker_server_host = "<%=mocker_server_host%>";
         window.mocker_server_port = "<%=mocker_server_port%>";
         window.mocker_server_prefix = "<%=mocker_server_prefix%>";
+        window.mocker_project_id = "<%=mocker_project_id%>";
 
 
 

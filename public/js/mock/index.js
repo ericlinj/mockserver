@@ -4,12 +4,22 @@ var JsonEditor = require('jsoneditor');
 var JsonMinify = require('jsonminify');
 var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
+var jsonEditor = null;
 
 exports.preAdd = function(context, next) {
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
   initJsonCheck();
+  $("#btn-add-submit").click(function() {
+    try {
+      var mockJson = jsonEditor.getText();
+      $("input[name=mock_json]").val(mockJson);
+      $("form")[0].submit()
+    } catch (e) {
+      alert("mock数据错误：" + e);
+    }
+  })
 };
 exports.preEdit = function(context, next) {
   var me = this;
@@ -19,30 +29,46 @@ exports.preEdit = function(context, next) {
   })
 
   initJsonCheck();
+  try {
+    jsonEditor.setText($("input[name=mock_json]").val());
+  } catch (e) {
+    console.info(e)
+  }
+  $("#btn-edit-submit").click(function() {
+    try {
+      var mockJson = jsonEditor.getText();
+      $("input[name=mock_json]").val(mockJson);
+      $("form")[0].submit()
+    } catch (e) {
+      alert("mock数据错误：" + e);
+    }
+  })
 };
 
 function initJsonCheck() {
   var me = this;
   //////jsoncheck
   var container = document.getElementById('mockjson');
-  this.showDialog = new Dialog("json格式验证", container).closable();
   //jsonEditor
-  var jsonEditor = new JsonEditor(container, {
-    mode: "view"
+  jsonEditor = new JsonEditor(container, {
+    modes: ['tree', 'text']
   });
   $("#jsonCheck").click(function() {
-    var jsondata = $("#mock_json").val();
-    var minifyJson = jsonMinify.minify(jsondata);
     try {
-      var mockJsonObj = JSON.parse(minifyJson);
-      jsonEditor.set(mockJsonObj);
+      var jsondata = jsonEditor.get();
+      alert("验证成功")
     } catch (e) {
-      jsonEditor.set({
-        "ERROR": "json格式错误"
-      });
+      alert("验证失败:" + e)
     }
-    me.showDialog.show();
-
+  })
+  $("#importResultJson").click(function() {
+    try {
+      var minifyJson = jsonMinify.minify($("#result_json").val());
+      jsonEditor.setText(minifyJson);
+    } catch (e) {
+      alert("导入失败，minifyJson:" + minifyJson)
+      console.info(e);
+    }
   })
 }
 //弹框

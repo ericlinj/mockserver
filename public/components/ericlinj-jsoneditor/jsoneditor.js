@@ -352,7 +352,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // create a mixin with the functions for tree mode
 	  var treemode = {};
-	      
+
 	  /**
 	   * Create a tree editor
 	   * @param {Element} container    Container element
@@ -1207,6 +1207,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // load a plain text textarea
 	      var textarea = document.createElement('textarea');
 	      textarea.className = 'text';
+	      textarea.rows = 12;
 	      textarea.spellcheck = false;
 	      this.content.appendChild(textarea);
 	      this.textarea = textarea;

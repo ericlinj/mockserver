@@ -11,12 +11,14 @@
       <div class="col-md-10 layout-main">
         <form class="form-horizontal" action="/mock/doEdit" method="post">
         <input type="hidden" name="id" value="<%=detail.id%>" />
+        <input type="hidden" name="mock_json" value="<%=detail.mock_json%>" />
 
         <div class="form-group">
             <label class="col-md-2 control-label">所属项目</label>
             <div class="col-md-5 ui-form-item">
               <select name="project_id">
-                <option value="1">mars</option>
+                <option value="1" <% if(detail.project_id == "1") {%> selected="selected"<%}%>>mars</option>
+                <option value="2" <% if(detail.project_id == "2") {%> selected="selected"<%}%>>mars-task</option>
               </select>
 
             </div>
@@ -56,17 +58,29 @@
           <div class="form-group" >
             <label class="col-md-2 control-label">
             输出数据
-
             </label>
-            <div class="col-md-5 ui-form-item" id="textarea-mock-json">
-              <textarea class="form-control" rows="8" name="mock_json" id="mock_json" placeholder="请输入‘输出数据’"><%=detail.mock_json%></textarea>
+            <div class="col-md-5 ui-form-item" id="textarea-result-json">
+              <textarea class="form-control" rows="8" name="result_json" id="result_json" placeholder="请输入‘输出数据’"><%=detail.result_json || ""%></textarea>
             </div>
             <div class="col-md-3">
-            <button id='jsonCheck' type="button" class="ok btn btn-secondary">json格式验证</button>
-            <div id="mockjson"></div>
               <span class="form-group-tip">*必填, <=10000字符</span>
             </div>
           </div>
+
+          <div class="form-group" >
+            <label class="col-md-2 control-label">
+            MOCK数据（FE填写，如为空，将默认使用输出数据作为mock结果数据）
+            </label>
+            <div class="col-md-5 ui-form-item" id="textarea-mock-json">
+              <div id="mockjson"></div>
+            </div>
+            <div class="col-md-3">
+            <button id='jsonCheck' type="button" class="ok btn btn-secondary">json格式验证</button>
+            <button id='importResultJson' type="button" class="ok btn btn-secondary">导入输入数据</button>
+            </div>
+          </div>
+
+
 
           <div class="form-group" >
             <label class="col-md-2 control-label">备注</label>
@@ -92,7 +106,7 @@
 
           <div class="form-group">
             <div class="col-md-3 col-md-push-2">
-              <button id='btn-submit' type="submit" class="ok btn btn-secondary">提 交</button>&nbsp;&nbsp;
+              <button id='btn-edit-submit' type="button" class="ok btn btn-secondary">提 交</button>&nbsp;&nbsp;
               <button type="reset" class="cancel btn btn-default">取 消</button>
             </div>
           </div>

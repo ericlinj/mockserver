@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('mock_detail', {
+  var mock_detail = sequelize.define('mock_detail', {
     url: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -13,6 +13,10 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: ''
     },
     para_json: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    result_json: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -43,6 +47,12 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     timestamps: false,
     freezeTableName: true,
-    tableName: "mock_detail"
+    tableName: "mock_detail",
+    associate: function(models) {
+      mock_detail.belongsTo(models.mock_project, {
+        foreignKey: 'project_id'
+      });
+    }
   });
+  return mock_detail
 };

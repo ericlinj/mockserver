@@ -35,6 +35,7 @@ exports.doAdd = function(req, res) {
     url: req.param('url') || '',
     title: req.param('title') || '',
     para_json: req.param('para_json') || '',
+    result_json: req.param('result_json') || '',
     mock_json: req.param('mock_json') || '',
     remark: req.param('remark') || '',
     is_mock: req.param('is_mock') || '1',
@@ -67,6 +68,7 @@ exports.doEdit = function(req, res) {
     url: req.param('url') || '',
     title: req.param('title') || '',
     para_json: req.param('para_json') || '',
+    result_json: req.param('result_json') || '',
     mock_json: req.param('mock_json') || '',
     remark: req.param('remark') || '',
     is_mock: req.param('is_mock') || '1',
@@ -90,6 +92,7 @@ exports.list = function(req, res) {
   var q_url = req.param('q_url') || '';
 
   db.mock_detail.findAll({
+    include: [db.mock_project],
     where: {
       'url': {
         like: ('%' + q_url + '%')
@@ -100,12 +103,13 @@ exports.list = function(req, res) {
     ]
   })
     .success(function(details) {
+      //logger.info(details);
       _.each(details, function(detail) {
         detail.create_time_showStr = new moment(utcTime(detail.create_time)).format('YYYY-MM-DD HH:mm:ss');
         detail.is_mock_showStr = parseInt(detail.is_mock, 10) === 1 ? '是' : '否';
+        console.dir(detail)
       })
 
-      logger.info(details);
       res.render('mockList', {
         details: details,
         q_url: q_url

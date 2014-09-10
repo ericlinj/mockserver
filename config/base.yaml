@@ -12,6 +12,7 @@ default:
 
   mocker_server_host: 'mockserver.sogou-inc.com'
   mocker_server_prefix: 'mockrest'
+  mocker_project_id: -1
 
 
 
