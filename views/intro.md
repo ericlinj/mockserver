@@ -25,7 +25,7 @@ ajaxmocker 分为服务端与客户端
 1. 本地配置host
 
 
-         mockserver.sogou-inc.com  10.134.70.205
+         10.134.70.205 mockserver.sogou-inc.com
 
 
 2. 访问
