@@ -22,12 +22,12 @@ ajaxmocker 分为服务端与客户端
   - 基于配置与接口数据，对所有本地的ajax请求的拦截与转发（到mockserver）
 
 ## 后端开发同学配置接口：
-1. 本地配置host，
-
-    mockserver.sogou-inc.com  10.134.70.205
+1. 本地配置host
 
 
-  `jpassport要求配置sogou-inc.com子域名`
+         mockserver.sogou-inc.com  10.134.70.205
+
+
 2. 访问
 
   <http://mockserver.sogou-inc.com:81>
@@ -44,20 +44,22 @@ ajaxmocker 分为服务端与客户端
 
 ## 前端开发同学需要：
 1. 安装ajaxmocker（目前仅支持cjs方式，有空把reqirejs和独立安装方式都处理一下）
-component下安装方式
+component下安装方式:
 
-    "dependencies": {
-        ...
-        "ericlinj/mocker": "*"
-      }
+
+        "dependencies": {
+          "ericlinj/mocker": "*"
+        }
+        
 
 2. 给出一个全局的oper-mocker参数：`0-关闭；1-开启`，建议通过后端的maven profile配置给出,仅仅在dev环境下给出，防止影响qa和product环境访问
 3. spa启动伊始进行初始化
 
-      var Mocker = require('mocker');
-          if (parseInt(window.openmocker , 10) === 1) {
-          new Mocker().start();
-        }
+
+        var Mocker = require('mocker');
+            if (parseInt(window.openmocker , 10) === 1) {
+            new Mocker().start();
+          }
 
 
 4. 启动client mocker完成
