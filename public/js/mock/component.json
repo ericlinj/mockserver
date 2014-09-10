@@ -9,6 +9,7 @@
   "dependencies": {
     "component/jquery": "*",
     "ericlinj/jsoneditor": "*",
+    "ericlinj/jsonminify": "*",
     "component/dialog": "*",
     "ianstormtaylor/router": "*"
   }

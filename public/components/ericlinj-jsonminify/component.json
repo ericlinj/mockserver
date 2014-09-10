@@ -1,0 +1,9 @@
+{
+  "name": "jsonminify",
+  "repo": "ericlinj/jsonminify",
+  "description": "minifies blocks of JSON-like content into valid JSON by removing all whitespace *and* comments",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ]
+}

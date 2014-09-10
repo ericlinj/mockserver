@@ -18305,6 +18305,70 @@ return /******/ (function(modules) { // webpackBootstrap
 });
 
 });
+require.register("ericlinj-jsonminify/index.js", function(exports, require, module){
+/*! JSON.minify()
+  v0.1.3-a (c) Kyle Simpson
+  MIT License
+*/
+function JsonMinify(){
+
+}
+module.exports = JsonMinify;
+
+
+JsonMinify.prototype.minify = function(json) {
+
+  var tokenizer = /"|(\/\*)|(\*\/)|(\/\/)|\n|\r/g,
+    in_string = false,
+    in_multiline_comment = false,
+    in_singleline_comment = false,
+    tmp, tmp2, new_str = [], ns = 0, from = 0, lc, rc
+  ;
+
+  tokenizer.lastIndex = 0;
+
+  while (tmp = tokenizer.exec(json)) {
+    lc = RegExp.leftContext;
+    rc = RegExp.rightContext;
+    if (!in_multiline_comment && !in_singleline_comment) {
+      tmp2 = lc.substring(from);
+      if (!in_string) {
+        tmp2 = tmp2.replace(/(\n|\r|\s)*/g,"");
+      }
+      new_str[ns++] = tmp2;
+    }
+    from = tokenizer.lastIndex;
+
+    if (tmp[0] == "\"" && !in_multiline_comment && !in_singleline_comment) {
+      tmp2 = lc.match(/(\\)*$/);
+      if (!in_string || !tmp2 || (tmp2[0].length % 2) == 0) { // start of string with ", or unescaped " character found to end string
+        in_string = !in_string;
+      }
+      from--; // include " character in next catch
+      rc = json.substring(from);
+    }
+    else if (tmp[0] == "/*" && !in_string && !in_multiline_comment && !in_singleline_comment) {
+      in_multiline_comment = true;
+    }
+    else if (tmp[0] == "*/" && !in_string && in_multiline_comment && !in_singleline_comment) {
+      in_multiline_comment = false;
+    }
+    else if (tmp[0] == "//" && !in_string && !in_multiline_comment && !in_singleline_comment) {
+      in_singleline_comment = true;
+    }
+    else if ((tmp[0] == "\n" || tmp[0] == "\r") && !in_string && !in_multiline_comment && in_singleline_comment) {
+      in_singleline_comment = false;
+    }
+    else if (!in_multiline_comment && !in_singleline_comment && !(/\n|\r|\s/.test(tmp[0]))) {
+      new_str[ns++] = tmp[0];
+    }
+  }
+  new_str[ns++] = rc;
+  return new_str.join("");
+};
+
+
+});
 require.register("component-overlay/index.js", function(exports, require, module){
 
 /**
@@ -19033,26 +19097,57 @@ require.register("mock/index.js", function(exports, require, module){
 //demo
 var $ = require('jquery');
 var JsonEditor = require('jsoneditor');
+var JsonMinify = require('jsonminify');
+var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
 
 exports.preAdd = function(context, next) {
-  $('.cancel').click(function(){
+  $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
+  initJsonCheck();
 };
 exports.preEdit = function(context, next) {
-  $('.cancel').click(function(){
+  var me = this;
+  ///////cancel
+  $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
+
+  initJsonCheck();
 };
 
+function initJsonCheck() {
+  var me = this;
+  //////jsoncheck
+  var container = document.getElementById('mockjson');
+  this.showDialog = new Dialog("json格式验证", container).closable();
+  //jsonEditor
+  var jsonEditor = new JsonEditor(container, {
+    mode: "view"
+  });
+  $("#jsonCheck").click(function() {
+    var jsondata = $("#mock_json").val();
+    var minifyJson = jsonMinify.minify(jsondata);
+    try {
+      var mockJsonObj = JSON.parse(minifyJson);
+      jsonEditor.set(mockJsonObj);
+    } catch (e) {
+      jsonEditor.set({
+        "ERROR": "json格式错误"
+      });
+    }
+    me.showDialog.show();
+
+  })
+}
 //弹框
 
 exports.list = function(context, next) {
   var container = document.getElementById('mockjson');
   var me = this;
   //dialog
-  me.showDialog = new Dialog("mockJsonObject", container).closable();
+  me.showDialog = new Dialog("跨域mockrest验证", container).closable();
   //jsonEditor
   var jsonEditor = new JsonEditor(container, {
     mode: "view"
@@ -19063,7 +19158,6 @@ exports.list = function(context, next) {
       url: url,
       success: function(data) {
         jsonEditor.set(data);
-        // me.showDialog.modal();
         me.showDialog.show();
 
       }
@@ -19097,6 +19191,8 @@ $(function() {
 });
 
 });
+
+
 
 
 
@@ -19197,6 +19293,9 @@ require.alias("component-jquery/index.js", "component-jquery/index.js");
 require.alias("ericlinj-jsoneditor/jsoneditor.js", "mock/deps/jsoneditor/jsoneditor.js");
 require.alias("ericlinj-jsoneditor/jsoneditor.js", "mock/deps/jsoneditor/index.js");
 require.alias("ericlinj-jsoneditor/jsoneditor.js", "ericlinj-jsoneditor/index.js");
+require.alias("ericlinj-jsonminify/index.js", "mock/deps/jsonminify/index.js");
+require.alias("ericlinj-jsonminify/index.js", "mock/deps/jsonminify/index.js");
+require.alias("ericlinj-jsonminify/index.js", "ericlinj-jsonminify/index.js");
 require.alias("component-dialog/index.js", "mock/deps/dialog/index.js");
 require.alias("component-emitter/index.js", "component-dialog/deps/emitter/index.js");
 
