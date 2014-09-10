@@ -101,19 +101,20 @@ component下安装方式:
     * 支持
 
 
-
       $.ajax({
         ....
         success :function(res){
         }
       })
 
-     * 不支持
 
 
-      $.ajax({}).success(function(){
-        //....
-      })
+    * 不支持
+
+
+        $.ajax({}).success(function(){
+          //....
+        })
 
 
 
