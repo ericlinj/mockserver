@@ -53,6 +53,28 @@ component下安装方式:
 
 
 2. 给出一个全局的oper-mocker参数：`0-关闭；1-开启`，建议通过后端的maven profile配置给出,仅仅在dev环境下给出，防止影响qa和product环境访问
+
+- 如果是独立的index-debug.html页面
+可以写死参数
+
+
+        window.open_mocker =1;
+        window.mocker_server_host = "mockserver.sogou-inc.com";
+        window.mocker_server_port = "81";
+        window.mocker_server_prefix = "mockrest";
+
+- 如果和已有的jsp页面整合，可以来自后台参数，形如：
+
+
+        window.open_mocker = "<%=open_mocker%>";
+        window.mocker_server_host = "<%=mocker_server_host%>";
+        window.mocker_server_port = "<%=mocker_server_port%>";
+        window.mocker_server_prefix = "<%=mocker_server_prefix%>";
+
+
+
+
+
 3. spa启动伊始进行初始化
 
 
