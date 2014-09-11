@@ -3,6 +3,11 @@ var Router = require('router');
 var Mock = require('mock');
 var Mocker = require('mocker');
 
+
+if (typeof console == "undefined") {
+  this.console = { log: function () {} };
+}
+
 // Router middleware
 
 $(function() {

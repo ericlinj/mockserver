@@ -22,7 +22,11 @@ exports.demo = function(req, res) {
       res.render('demo', {
         urls: urls
       });
-    })
+    }).error(function(err) {
+      logger.error(err);
+      util.errorRender(res, err.code);
+      return;
+    });
 };
 
 ////////////新建
@@ -46,7 +50,11 @@ exports.doAdd = function(req, res) {
     function() {
       res.redirect('list')
     }
-  );
+  ).error(function(err) {
+    logger.error(err);
+    util.errorRender(res, err.code);
+    return;
+  });;
 };
 
 exports.preEdit = function(req, res) {
@@ -60,10 +68,15 @@ exports.preEdit = function(req, res) {
       res.render('mockEdit', {
         detail: detail
       })
-    })
+    }).error(function(err) {
+      logger.error(err);
+      util.errorRender(res, err.code);
+      return;
+    });
 };
 
 exports.doEdit = function(req, res) {
+  var isStay = req.param('is_stay');
   db.mock_detail.update({
     url: req.param('url') || '',
     title: req.param('title') || '',
@@ -78,9 +91,26 @@ exports.doEdit = function(req, res) {
     'id': req.param('id')
   }).success(
     function() {
-      res.redirect('list')
+      if (isStay && parseInt(isStay, 10) === 1) {
+        res.json({
+          status: 1
+        });
+      } else {
+        res.redirect('list')
+      }
     }
-  );
+  ).error(function(err) {
+    logger.error(err);
+    if (isStay && parseInt(isStay, 10) === 1) {
+      res.json({
+        status: 500,
+        msg: err
+      });
+    } else {
+      util.errorRender(res, err.code);
+    }
+    return;
+  });
 };
 
 exports.doDel = function(req, res) {
@@ -114,5 +144,9 @@ exports.list = function(req, res) {
         details: details,
         q_url: q_url
       })
-    })
+    }).error(function(err) {
+      logger.error(err);
+      util.errorRender(res, err.code);
+      return;
+    });
 };

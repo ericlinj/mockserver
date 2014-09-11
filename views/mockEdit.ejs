@@ -12,6 +12,7 @@
         <form class="form-horizontal" action="/mock/doEdit" method="post">
         <input type="hidden" name="id" value="<%=detail.id%>" />
         <input type="hidden" name="mock_json" value="<%=detail.mock_json%>" />
+        <input type="hidden" name="is_stay" value="0" />
 
         <div class="form-group">
             <label class="col-md-2 control-label">所属项目</label>
@@ -105,8 +106,9 @@
 
 
           <div class="form-group">
-            <div class="col-md-3 col-md-push-2">
-              <button id='btn-edit-submit' type="button" class="ok btn btn-secondary">提 交</button>&nbsp;&nbsp;
+            <div class="col-md-5 col-md-push-2">
+              <button id='btn-edit-stay-submit' type="button" class="ok btn btn-secondary">本页保存</button>&nbsp;&nbsp;
+              <button id='btn-edit-submit' type="button" class="ok btn btn-secondary">保存后跳转</button>&nbsp;&nbsp;
               <button type="reset" class="cancel btn btn-default">取 消</button>
             </div>
           </div>

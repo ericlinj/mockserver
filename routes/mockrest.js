@@ -38,7 +38,13 @@ exports.doMock = function(req, res) {
           });
         }
       }
-    })
+    }).error(function(err) {
+      logger.error(err);
+      res.jsonp({
+        "ERROR": err
+      })
+      return;
+    });
 
 };
 
@@ -47,7 +53,7 @@ exports.getMockDetails = function(req, res) {
   var whereObj = {};
   if (project_id && parseInt(project_id, 10) === -1) {
     whereObj = {}
-  }else{
+  } else {
     whereObj = {
       'project_id': project_id
     }
@@ -56,5 +62,9 @@ exports.getMockDetails = function(req, res) {
     where: whereObj
   }).success(function(data) {
     res.jsonp(data);
-  })
+  }).error(function(err) {
+    logger.error(err);
+    util.errorRender(res, err.code);
+    return;
+  });
 };

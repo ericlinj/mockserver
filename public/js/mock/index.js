@@ -38,10 +38,37 @@ exports.preEdit = function(context, next) {
     try {
       var mockJson = jsonEditor.getText();
       $("input[name=mock_json]").val(mockJson);
+      $("input[name=is_stay]").val(0);
       $("form")[0].submit()
     } catch (e) {
       alert("mock数据错误：" + e);
     }
+  })
+
+  $("#btn-edit-stay-submit").click(function() {
+    try {
+      var mockJson = jsonEditor.getText();
+
+    } catch (e) {
+      alert("mock数据错误：" + e);
+    }
+
+    $("input[name=mock_json]").val(mockJson);
+    $("input[name=is_stay]").val(1);
+
+    $.ajax({
+      url: "/mock/doEdit",
+      data: $("form").eq(0).serialize(),
+      type: "POST"
+    }).success(function(res) {
+      if (res.status == 1) {
+        alert("保存成功！");
+      } else {
+        alert("出错了：" + res.msg);
+      }
+    }).error(function(e) {
+      console.error(e);
+    })
   })
 };
 
