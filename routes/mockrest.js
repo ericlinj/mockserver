@@ -16,9 +16,9 @@ JSON.minify = JSON.minify || require("node-json-minify");
 exports.doMock = function(req, res) {
   var url = req.url;
   var prefixLen = global.CONFIG.mocker_server_prefix.length + 2;
-  var mockUrl = url.substr(url.indexOf('/' + global.CONFIG.mocker_server_prefix + '/') + prefixLen);
+  var mockUrl = url.substr(url.indexOf('/' + global.CONFIG.mocker_server_prefix + '/')-1 + prefixLen);
   mockUrl = mockUrl.substr(mockUrl, mockUrl.indexOf("?"))
-  logger.info("mockUrl" + mockUrl);
+  logger.info("mockUrl:" + mockUrl);
 
   db.mock_detail.find({
     where: {
