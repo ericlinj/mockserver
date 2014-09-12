@@ -30,7 +30,8 @@ exports.preEdit = function(context, next) {
 
   initJsonCheck();
   try {
-    jsonEditor.setText($("input[name=mock_json]").val());
+    var json = $("input[name=mock_json]").val() || "{}";
+    jsonEditor.setText(json);
   } catch (e) {
     console.info(e)
   }
@@ -78,7 +79,7 @@ function initJsonCheck() {
   var container = document.getElementById('mockjson');
   //jsonEditor
   jsonEditor = new JsonEditor(container, {
-    modes: ['tree', 'text']
+    modes: ['tree', 'text', 'code']
   });
   $("#jsonCheck").click(function() {
     try {
@@ -100,25 +101,45 @@ function initJsonCheck() {
 }
 //弹框
 
+//////进入list页面
 exports.list = function(context, next) {
   var container = document.getElementById('mockjson');
   var me = this;
-  //dialog
-  me.showDialog = new Dialog("跨域mockrest验证", container).closable();
-  //jsonEditor
-  var jsonEditor = new JsonEditor(container, {
-    mode: "view"
-  });
-  $(".mockButton").click(function() {
-    var url = $(this).attr("data-url");
-    $.ajax({
-      type: "POST",
-      url: url,
-      success: function(data) {
-        jsonEditor.set(data);
-        me.showDialog.show();
-
-      }
-    });
+  // project list select
+  var q_cache_project = $("select[name=q_project]").attr('data_qcache');
+  $.ajax({
+    url: '/project/ajaxList',
+    type: 'get',
+    success: function(data) {
+      var optHtml = '';
+      $(data).each(function(idx, item) {
+        if (q_cache_project && parseInt(q_cache_project, 10) === parseInt(item.id, 10)) {
+          optHtml += '<option value=' + item.id + ' selected="selected">' + item.name + '</option>'
+        } else {
+          optHtml += '<option value=' + item.id + '>' + item.name + '</option>'
+        }
+      });
+      $("select[name=q_project]").html(optHtml);
+    }
   })
+  if(container){
+    //dialog
+    me.showDialog = new Dialog("跨域mockrest验证", container).closable();
+    //jsonEditor
+    var jsonEditor = new JsonEditor(container, {
+      mode: "view"
+    });
+    $(".mockButton").click(function() {
+      var url = $(this).attr("data-url");
+      $.ajax({
+        type: "POST",
+        url: url,
+        success: function(data) {
+          jsonEditor.set(data);
+          me.showDialog.show();
+
+        }
+      });
+    })
+  }
 };

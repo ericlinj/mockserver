@@ -15,8 +15,10 @@
 
   <!-- App JS -->
   <script src="/build/build.js"></script>
+  <script src="/ace-builds/ace.js" type="text/javascript" charset="utf-8"></script>
   <script>
   require("boot");
+  //TODO use jsload to load the constant,just for client mocker install
   window.openmocker = <%=openmocker%>;
   window.mocker_server_host = "<%=mocker_server_host%>";
   window.mocker_server_port = "<%=mocker_server_port%>";

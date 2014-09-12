@@ -12,8 +12,13 @@
     <div class="container task-rows"><div class="row">
       <div class="portlet">
         <form class="form-inline " method="get" action="/mock/list">
-          <div class="input-group col-md-3">
+          <div class="input-group col-md-7">
+            <span class="input-group-btn">
+            <select name="q_project" class="form-control" data_qcache="<%=q_project%>"></select>
+            </span>
+            <span class="input-group-btn">
             <input type="text" name="q_url" class="form-control" placeholder="输入接口url" value="<%=q_url%>">
+            </span>
             <span class="input-group-btn">
             <button class="btn btn-secondary" type="submit">搜 索</button>
             </span>

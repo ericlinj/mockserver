@@ -13219,16 +13219,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if (this.mode == 'code') {
 	      this.editorDom = document.createElement('div');
+	      this.editorDom.id = "aceEditor";
 	      this.editorDom.style.height = '100%'; // TODO: move to css
 	      this.editorDom.style.width = '100%'; // TODO: move to css
 	      this.content.appendChild(this.editorDom);
 
 	      var editor = ace.edit(this.editorDom);
 	      editor.setTheme('ace/theme/jsoneditor');
+	      editor.getSession().setMode('ace/mode/json');
+	      //editor.getSession().setTabSize(30);
 	      editor.setShowPrintMargin(false);
 	      editor.setFontSize(13);
-	      editor.getSession().setMode('ace/mode/json');
-	      editor.getSession().setTabSize(2);
 	      editor.getSession().setUseSoftTabs(true);
 	      editor.getSession().setUseWrapMode(true);
 	      this.editor = editor;
@@ -13257,8 +13258,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // load a plain text textarea
 	      var textarea = document.createElement('textarea');
 	      textarea.className = 'text';
-	      textarea.rows = 12;
 	      textarea.spellcheck = false;
+	      // textarea.rows = 12;
 	      this.content.appendChild(textarea);
 	      this.textarea = textarea;
 
@@ -18377,7 +18378,6 @@ JsonMinify.prototype.minify = function(json) {
   return new_str.join("");
 };
 
-
 });
 require.register("component-overlay/index.js", function(exports, require, module){
 
@@ -18385,8 +18385,11 @@ require.register("component-overlay/index.js", function(exports, require, module
  * Module dependencies.
  */
 
-var Emitter = require('emitter')
-  , o = require('jquery');
+var Emitter = require('emitter');
+var tmpl = require('./template.html');
+var domify = require('domify');
+var event = require('event');
+var classes = require('classes');
 
 /**
  * Expose `overlay()`.
@@ -18417,7 +18420,7 @@ function overlay(options){
   }
 
   return new Overlay(options);
-};
+}
 
 /**
  * Initialize a new `Overlay`.
@@ -18429,12 +18432,14 @@ function overlay(options){
 function Overlay(options) {
   Emitter.call(this);
   options = options || {};
-  this.target = options.target || 'body';
+  this.target = options.target || document.body;
   this.closable = options.closable;
-  this.el = o(require('./template'));
-  if (this.target) this.el.removeAttr('id').addClass('overlay');
-  this.el.appendTo(this.target);
-  if (this.closable) this.el.click(this.hide.bind(this));
+  this.el = domify(tmpl);
+  this.target.appendChild(this.el);
+  if (this.closable) {
+	event.bind(this.el, 'click', this.hide.bind(this));
+    classes(this.el).add('closable');
+  }
 }
 
 /**
@@ -18454,7 +18459,7 @@ Emitter(Overlay.prototype);
 
 Overlay.prototype.show = function(){
   this.emit('show');
-  this.el.removeClass('hide');
+  classes(this.el).remove('hidden');
   return this;
 };
 
@@ -18484,17 +18489,14 @@ Overlay.prototype.hide = function(){
 Overlay.prototype.remove = function(){
   var self = this;
   this.emit('close');
-  this.el.addClass('hide');
+  classes(this.el).add('hidden');
   setTimeout(function(){
-    self.el.remove();
-  }, 2000);
+    self.target.removeChild(self.el);
+  }, 350);
   return this;
 };
 
 
-});
-require.register("component-overlay/template.js", function(exports, require, module){
-module.exports = '<div id="overlay" class="hide"></div>';
 });
 require.register("component-domify/index.js", function(exports, require, module){
 
@@ -18721,26 +18723,45 @@ ClassList.prototype.removeMatching = function(re){
 };
 
 /**
- * Toggle class `name`.
+ * Toggle class `name`, can force state via `force`.
+ *
+ * For browsers that support classList, but do not support `force` yet,
+ * the mistake will be detected and corrected.
  *
  * @param {String} name
+ * @param {Boolean} force
  * @return {ClassList}
  * @api public
  */
 
-ClassList.prototype.toggle = function(name){
+ClassList.prototype.toggle = function(name, force){
   // classList
   if (this.list) {
-    this.list.toggle(name);
+    if ("undefined" !== typeof force) {
+      if (force !== this.list.toggle(name, force)) {
+        this.list.toggle(name); // toggle again to correct
+      }
+    } else {
+      this.list.toggle(name);
+    }
     return this;
   }
 
   // fallback
-  if (this.has(name)) {
-    this.remove(name);
+  if ("undefined" !== typeof force) {
+    if (!force) {
+      this.remove(name);
+    } else {
+      this.add(name);
+    }
   } else {
-    this.add(name);
+    if (this.has(name)) {
+      this.remove(name);
+    } else {
+      this.add(name);
+    }
   }
+
   return this;
 };
 
@@ -19013,7 +19034,7 @@ Dialog.prototype.show = function(){
   // overlay
   if (overlay) {
     overlay.show();
-    //this._classes.add('modal');
+    this._classes.add('modal');
   }
 
   // escape
@@ -19136,7 +19157,8 @@ exports.preEdit = function(context, next) {
 
   initJsonCheck();
   try {
-    jsonEditor.setText($("input[name=mock_json]").val());
+    var json = $("input[name=mock_json]").val() || "{}";
+    jsonEditor.setText(json);
   } catch (e) {
     console.info(e)
   }
@@ -19184,7 +19206,7 @@ function initJsonCheck() {
   var container = document.getElementById('mockjson');
   //jsonEditor
   jsonEditor = new JsonEditor(container, {
-    modes: ['tree', 'text']
+    modes: ['tree', 'text', 'code']
   });
   $("#jsonCheck").click(function() {
     try {
@@ -19206,27 +19228,47 @@ function initJsonCheck() {
 }
 //弹框
 
+//////进入list页面
 exports.list = function(context, next) {
   var container = document.getElementById('mockjson');
   var me = this;
-  //dialog
-  me.showDialog = new Dialog("跨域mockrest验证", container).closable();
-  //jsonEditor
-  var jsonEditor = new JsonEditor(container, {
-    mode: "view"
-  });
-  $(".mockButton").click(function() {
-    var url = $(this).attr("data-url");
-    $.ajax({
-      type: "POST",
-      url: url,
-      success: function(data) {
-        jsonEditor.set(data);
-        me.showDialog.show();
-
-      }
-    });
+  // project list select
+  var q_cache_project = $("select[name=q_project]").attr('data_qcache');
+  $.ajax({
+    url: '/project/ajaxList',
+    type: 'get',
+    success: function(data) {
+      var optHtml = '';
+      $(data).each(function(idx, item) {
+        if (q_cache_project && parseInt(q_cache_project, 10) === parseInt(item.id, 10)) {
+          optHtml += '<option value=' + item.id + ' selected="selected">' + item.name + '</option>'
+        } else {
+          optHtml += '<option value=' + item.id + '>' + item.name + '</option>'
+        }
+      });
+      $("select[name=q_project]").html(optHtml);
+    }
   })
+  if(container){
+    //dialog
+    me.showDialog = new Dialog("跨域mockrest验证", container).closable();
+    //jsonEditor
+    var jsonEditor = new JsonEditor(container, {
+      mode: "view"
+    });
+    $(".mockButton").click(function() {
+      var url = $(this).attr("data-url");
+      $.ajax({
+        type: "POST",
+        url: url,
+        success: function(data) {
+          jsonEditor.set(data);
+          me.showDialog.show();
+
+        }
+      });
+    })
+  }
 };
 
 });
@@ -19293,11 +19335,13 @@ $(function() {
 
 
 
-
+require.register("component-overlay/template.html", function(exports, require, module){
+module.exports = '<div class="overlay hidden"></div>\n';
+});
 
 
 require.register("component-dialog/template.html", function(exports, require, module){
-module.exports = '<div id="dialog" class="hide">\n  <div class="content">\n    <span class="title">Title</span>\n    <a href="#" class="close">&times;<em>close</em></a>\n    <div class="body">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n';
+module.exports = '<div class="dialog hide">\n  <div class="content">\n    <span class="title">Title</span>\n    <a href="#" class="close">&times;<em>close</em></a>\n    <div class="body">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n';
 });
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "stars/deps/boot/index.js");
@@ -19369,12 +19413,15 @@ require.alias("component-dialog/index.js", "mock/deps/dialog/index.js");
 require.alias("component-emitter/index.js", "component-dialog/deps/emitter/index.js");
 
 require.alias("component-overlay/index.js", "component-dialog/deps/overlay/index.js");
-require.alias("component-overlay/template.js", "component-dialog/deps/overlay/template.js");
 require.alias("component-emitter/index.js", "component-overlay/deps/emitter/index.js");
 
-require.alias("component-jquery/index.js", "component-overlay/deps/jquery/index.js");
-require.alias("component-jquery/index.js", "component-overlay/deps/jquery/index.js");
-require.alias("component-jquery/index.js", "component-jquery/index.js");
+require.alias("component-domify/index.js", "component-overlay/deps/domify/index.js");
+
+require.alias("component-event/index.js", "component-overlay/deps/event/index.js");
+
+require.alias("component-classes/index.js", "component-overlay/deps/classes/index.js");
+require.alias("component-indexof/index.js", "component-classes/deps/indexof/index.js");
+
 require.alias("component-domify/index.js", "component-dialog/deps/domify/index.js");
 
 require.alias("component-event/index.js", "component-dialog/deps/event/index.js");

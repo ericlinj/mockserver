@@ -120,13 +120,15 @@ exports.doDel = function(req, res) {
 exports.list = function(req, res) {
   var data = [];
   var q_url = req.param('q_url') || '';
+  var q_project = req.param('q_project') || 1;
 
   db.mock_detail.findAll({
     include: [db.mock_project],
     where: {
       'url': {
         like: ('%' + q_url + '%')
-      }
+      },
+      'mock_project.id': q_project
     },
     order: [
       ['id', 'desc']
@@ -137,12 +139,12 @@ exports.list = function(req, res) {
       _.each(details, function(detail) {
         detail.create_time_showStr = new moment(utcTime(detail.create_time)).format('YYYY-MM-DD HH:mm:ss');
         detail.is_mock_showStr = parseInt(detail.is_mock, 10) === 1 ? '是' : '否';
-        console.dir(detail)
       })
 
       res.render('mockList', {
         details: details,
-        q_url: q_url
+        q_url: q_url,
+        q_project: q_project
       })
     }).error(function(err) {
       logger.error(err);
