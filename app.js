@@ -83,9 +83,9 @@ if ('development' === env) {
   app.use(require('errorhandler')());
   app.use(function(req, res, next) {
     app.locals.openmocker = 1; //mock is support!
-    res.locals.username = 'ligangbj7466_dev111';
+    res.locals.username = 'ligangbj7466_dev';
     req.session.user = {
-      username: 'ligangbj7466_dev111'
+      username: 'ligangbj7466_dev'
     };
     next();
   });

@@ -114,21 +114,32 @@ exports.doEdit = function(req, res) {
 };
 
 exports.doDel = function(req, res) {
-  db.mock_detail.destroy({
-      'id': req.param('id')
-  })
-    .success(function(detail) {
-      res.json({
-        status: 1
-      })
-    }).error(function(err) {
-      logger.error(err);
-      res.json({
-        status: 500,
-        msg: err
+  if(canDel(req)){
+    db.mock_detail.destroy({
+        'id': req.param('id')
+    })
+      .success(function(detail) {
+        res.json({
+          status: 1
+        })
+      }).error(function(err) {
+        logger.error(err);
+        res.json({
+          status: 500,
+          msg: err
+        });
       });
-    });
+  }else{
+    res.json({
+          status: 500,
+          msg: "没有删除权限"
+        });
+  }
 };
+
+function canDel(req){
+  return req.session.user.username && (req.session.user.username.indexOf("ligangbj7466") != -1)
+}
 
 exports.list = function(req, res) {
   var data = [];
