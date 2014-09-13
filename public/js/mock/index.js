@@ -5,8 +5,10 @@ var JsonMinify = require('jsonminify');
 var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
 var jsonEditor = null;
+var appUtil = require('appUtil');
 
 exports.preAdd = function(context, next) {
+  appUtil.initProjectSelect("project_id");
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
@@ -23,6 +25,7 @@ exports.preAdd = function(context, next) {
 };
 exports.preEdit = function(context, next) {
   var me = this;
+  appUtil.initProjectSelect("project_id", $("select[name=project_id]").attr("data_project_id"));
   ///////cancel
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
@@ -106,23 +109,9 @@ exports.list = function(context, next) {
   var container = document.getElementById('mockjson');
   var me = this;
   // project list select
-  var q_cache_project = $("select[name=q_project]").attr('data_qcache');
-  $.ajax({
-    url: '/project/ajaxList',
-    type: 'get',
-    success: function(data) {
-      var optHtml = '';
-      $(data).each(function(idx, item) {
-        if (q_cache_project && parseInt(q_cache_project, 10) === parseInt(item.id, 10)) {
-          optHtml += '<option value=' + item.id + ' selected="selected">' + item.name + '</option>'
-        } else {
-          optHtml += '<option value=' + item.id + '>' + item.name + '</option>'
-        }
-      });
-      $("select[name=q_project]").html(optHtml);
-    }
-  })
-  if(container){
+  appUtil.initProjectSelect("q_project", $("select[name=q_project]").attr('data_qcache'));
+  //add ajaxmock checker
+  if (container) {
     //dialog
     me.showDialog = new Dialog("跨域mockrest验证", container).closable();
     //jsonEditor
@@ -140,6 +129,32 @@ exports.list = function(context, next) {
 
         }
       });
+    });
+    //del
+    $(".delButton").click(function() {
+      if (!confirm("确认删除？")) {
+        return;
+      }
+      var me = this;
+      var delId = $(this).attr("data-id");
+      $.ajax({
+        type: "get",
+        url: "/mock/doDel",
+        data: {
+          id: delId
+        },
+        success: function(data) {
+          if (data.status && parseInt(data.status, 10) == 1) {
+            $(me).parentsUntil("tr").parent().remove();
+            alert("删除成功");
+          } else {
+            alert("发生异常:" + data.msg);
+          }
+        }
+      });
     })
+
+    ///////////////
+
   }
 };

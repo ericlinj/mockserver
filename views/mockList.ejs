@@ -13,13 +13,13 @@
       <div class="portlet">
         <form class="form-inline " method="get" action="/mock/list">
           <div class="input-group col-md-7">
-            <span class="input-group-btn">
+            <span class="input-group-btn ">
             <select name="q_project" class="form-control" data_qcache="<%=q_project%>"></select>
             </span>
-            <span class="input-group-btn">
+            <span class="input-group-btn mine-pl10">
             <input type="text" name="q_url" class="form-control" placeholder="输入接口url" value="<%=q_url%>">
             </span>
-            <span class="input-group-btn">
+            <span class="input-group-btn mine-pl10">
             <button class="btn btn-secondary" type="submit">搜 索</button>
             </span>
           </div>
@@ -55,6 +55,7 @@
                 <td><%= item.create_time_showStr %></td>
                 <td>
                       <input type="button" class="mockButton" data-url='<%=item.url%>' value="验证跨域与格式"  />
+                      <input type="button" class="delButton" data-id='<%=item.id%>' value="删除"  />
                     </td>
               </tr>
               <% }) %>

@@ -19124,6 +19124,52 @@ Dialog.prototype.remove = function(){
 };
 
 });
+require.register("apputil/index.js", function(exports, require, module){
+var AppUtil = {},
+  $ = require('jquery');
+
+
+
+
+//缓存定义
+AppUtil.Cache = {};
+
+
+//常量定义
+AppUtil.CONST = {};
+
+
+
+
+//工具方法
+
+AppUtil.initProjectSelect = function(selectName , curPrjId){
+  $.ajax({
+    url: '/project/ajaxList',
+    type: 'get',
+    success: function(data) {
+      var optHtml = '';
+      $(data).each(function(idx, item) {
+        if (curPrjId && parseInt(curPrjId, 10) === parseInt(item.id, 10)) {
+          optHtml += '<option value=' + item.id + ' selected="selected">' + item.name + '</option>'
+        } else {
+          optHtml += '<option value=' + item.id + '>' + item.name + '</option>'
+        }
+      });
+      $("select[name="+selectName+"]").html(optHtml);
+    }
+  })
+}
+
+
+
+
+
+
+
+module.exports = AppUtil;
+
+});
 require.register("mock/index.js", function(exports, require, module){
 //demo
 var $ = require('jquery');
@@ -19132,8 +19178,10 @@ var JsonMinify = require('jsonminify');
 var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
 var jsonEditor = null;
+var appUtil = require('appUtil');
 
 exports.preAdd = function(context, next) {
+  appUtil.initProjectSelect("project_id");
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
@@ -19150,6 +19198,7 @@ exports.preAdd = function(context, next) {
 };
 exports.preEdit = function(context, next) {
   var me = this;
+  appUtil.initProjectSelect("project_id", $("select[name=project_id]").attr("data_project_id"));
   ///////cancel
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
@@ -19233,23 +19282,9 @@ exports.list = function(context, next) {
   var container = document.getElementById('mockjson');
   var me = this;
   // project list select
-  var q_cache_project = $("select[name=q_project]").attr('data_qcache');
-  $.ajax({
-    url: '/project/ajaxList',
-    type: 'get',
-    success: function(data) {
-      var optHtml = '';
-      $(data).each(function(idx, item) {
-        if (q_cache_project && parseInt(q_cache_project, 10) === parseInt(item.id, 10)) {
-          optHtml += '<option value=' + item.id + ' selected="selected">' + item.name + '</option>'
-        } else {
-          optHtml += '<option value=' + item.id + '>' + item.name + '</option>'
-        }
-      });
-      $("select[name=q_project]").html(optHtml);
-    }
-  })
-  if(container){
+  appUtil.initProjectSelect("q_project", $("select[name=q_project]").attr('data_qcache'));
+  //add ajaxmock checker
+  if (container) {
     //dialog
     me.showDialog = new Dialog("跨域mockrest验证", container).closable();
     //jsonEditor
@@ -19267,7 +19302,33 @@ exports.list = function(context, next) {
 
         }
       });
+    });
+    //del
+    $(".delButton").click(function() {
+      if (!confirm("确认删除？")) {
+        return;
+      }
+      var me = this;
+      var delId = $(this).attr("data-id");
+      $.ajax({
+        type: "get",
+        url: "/mock/doDel",
+        data: {
+          id: delId
+        },
+        success: function(data) {
+          if (data.status && parseInt(data.status, 10) == 1) {
+            $(me).parentsUntil("tr").parent().remove();
+            alert("删除成功");
+          } else {
+            alert("发生异常:" + data.msg);
+          }
+        }
+      });
     })
+
+    ///////////////
+
   }
 };
 
@@ -19335,6 +19396,7 @@ $(function() {
 
 
 
+
 require.register("component-overlay/template.html", function(exports, require, module){
 module.exports = '<div class="overlay hidden"></div>\n';
 });
@@ -19343,6 +19405,7 @@ module.exports = '<div class="overlay hidden"></div>\n';
 require.register("component-dialog/template.html", function(exports, require, module){
 module.exports = '<div class="dialog hide">\n  <div class="content">\n    <span class="title">Title</span>\n    <a href="#" class="close">&times;<em>close</em></a>\n    <div class="body">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n';
 });
+
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "boot/index.js");
@@ -19472,5 +19535,11 @@ require.alias("yields-stop/index.js", "ianstormtaylor-router/deps/stop/index.js"
 require.alias("component-indexof/index.js", "ianstormtaylor-router/deps/indexof/index.js");
 
 require.alias("ianstormtaylor-router/lib/index.js", "ianstormtaylor-router/index.js");
+require.alias("apputil/index.js", "mock/deps/appUtil/index.js");
+require.alias("apputil/index.js", "mock/deps/appUtil/index.js");
+require.alias("component-jquery/index.js", "apputil/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "apputil/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "component-jquery/index.js");
+require.alias("apputil/index.js", "apputil/index.js");
 require.alias("mock/index.js", "mock/index.js");
 require.alias("boot/index.js", "boot/index.js");

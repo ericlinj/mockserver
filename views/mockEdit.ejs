@@ -17,9 +17,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label">所属项目</label>
             <div class="col-md-5 ui-form-item">
-              <select name="project_id">
-                <option value="1" <% if(detail.project_id == "1") {%> selected="selected"<%}%>>mars</option>
-                <option value="2" <% if(detail.project_id == "2") {%> selected="selected"<%}%>>mars-task</option>
+              <select name="project_id" data_project_id="<%=detail.project_id%>">
               </select>
 
             </div>

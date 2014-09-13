@@ -114,7 +114,20 @@ exports.doEdit = function(req, res) {
 };
 
 exports.doDel = function(req, res) {
-  res.render('mockList', {})
+  db.mock_detail.destroy({
+      'id': req.param('id')
+  })
+    .success(function(detail) {
+      res.json({
+        status: 1
+      })
+    }).error(function(err) {
+      logger.error(err);
+      res.json({
+        status: 500,
+        msg: err
+      });
+    });
 };
 
 exports.list = function(req, res) {

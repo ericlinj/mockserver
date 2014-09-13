@@ -5,7 +5,12 @@
   "scripts": [
     "index.js"
   ],
-
+  "local": [
+    "appUtil"
+  ],
+  "styles": [
+    "mock.css"
+  ],
   "dependencies": {
     "component/jquery": "*",
     "ericlinj/jsoneditor": "*",
