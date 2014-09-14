@@ -55,7 +55,7 @@ exports.exportExcel = function(req, res) {
       util.errorRender(res, err);
     }
 
-    res.download(fileName, fileName, function(err) {
+    res.download(fileUrl, fileName, function(err) {
       if (err) {
         logger.error(err);
         util.errorRender(res, err);
