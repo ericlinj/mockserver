@@ -4,7 +4,6 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 var util = require('./util');
 var logger = require('./log4js.js');
-var PDFDocument = require('pdfkit');
 var fs = require('fs');
 var XLSX = require('xlsx');
 var ExcelWriter = require('../models/export/excelWriter');
