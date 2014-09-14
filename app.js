@@ -22,6 +22,7 @@ var routes = require('./routes');
 var mock = require('./routes/mock');
 var project = require('./routes/project');
 var mockrest = require('./routes/mockrest');
+var util = require('./routes/util');
 // load global config
 var yaml = require('node-yaml-config');
 var CONFIG = yaml.load('./config/base.yaml');
@@ -153,6 +154,8 @@ app.post('/project/doAdd', project.doAdd);
 app.get('/project/doDel', project.doDel);
 app.get('/project/list', project.list);
 app.get('/project/ajaxList', project.ajaxList);
+// app.get('/project/exportPdf', project.exportPdf);
+app.get('/project/exportExcel', project.exportExcel);
 
 app.get('/logout', routes.logout);
 

@@ -9,7 +9,9 @@ exports.getTaskEndTime = function(task_begin_time, task_time_type) {
 exports.getNowYYYYMMDDHHmmss = function() {
   return new moment().format('YYYY-MM-DD HH:mm:ss');
 };
-
+exports.getNowStrForVersion = function() {
+  return new moment().format('YYYYMMDDHHmmss');
+};
 exports.utcTime = function(datetime) {
   return moment.utc(datetime);
 };

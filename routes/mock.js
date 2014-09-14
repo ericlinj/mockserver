@@ -5,6 +5,7 @@ var moment = require('moment');
 var util = require('./util');
 var logger = require('./log4js.js');
 
+
 var utcTime = util.utcTime
 var memorize = util.memorize;
 var getTaskEndTime = util.getTaskEndTime;
@@ -114,9 +115,9 @@ exports.doEdit = function(req, res) {
 };
 
 exports.doDel = function(req, res) {
-  if(canDel(req)){
+  if (canDel(req)) {
     db.mock_detail.destroy({
-        'id': req.param('id')
+      'id': req.param('id')
     })
       .success(function(detail) {
         res.json({
@@ -129,15 +130,15 @@ exports.doDel = function(req, res) {
           msg: err
         });
       });
-  }else{
+  } else {
     res.json({
-          status: 500,
-          msg: "没有删除权限"
-        });
+      status: 500,
+      msg: "没有删除权限"
+    });
   }
 };
 
-function canDel(req){
+function canDel(req) {
   return req.session.user.username && (req.session.user.username.indexOf("ligangbj7466") != -1)
 }
 
@@ -176,3 +177,5 @@ exports.list = function(req, res) {
       return;
     });
 };
+
+
