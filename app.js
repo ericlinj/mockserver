@@ -65,13 +65,6 @@ app.use(serveStatic(path.join(__dirname, 'public')));
 // jpassport is sogou's oss ,use jpassport-sp cookie to store user
 app.locals.title = CONFIG.website.title;
 
-//////////////
-app.locals.mocker_server_host = CONFIG.mocker_server_host;
-app.locals.mocker_server_port = CONFIG.server.port;
-app.locals.mocker_server_prefix = CONFIG.mocker_server_prefix;
-app.locals.mocker_project_id = CONFIG.mocker_project_id;
-app.locals.openmocker = 1;
-
 ///////////////node_env
 if ('development' === env) {
   logger.setLevel(CONFIG.logger.level.development);
@@ -83,7 +76,6 @@ if ('development' === env) {
   //development only
   app.use(require('errorhandler')());
   app.use(function(req, res, next) {
-    app.locals.openmocker = 1; //mock is support!
     res.locals.username = 'ligangbj7466_dev';
     req.session.user = {
       username: 'ligangbj7466_dev'
@@ -168,7 +160,7 @@ app.get('/md/intro', function(req, res) {
 });
 
 //////////////外部接口调用
-app.get('/mockrest/initMockContext', mockrest.getMockDetails);
+app.get('/mockrest/initMockContext', mockrest.initMockContext);
 app.get('/mockrest/getMockDetails', mockrest.getMockDetails);
 app.get('/mockrest/*', mockrest.doMock);
 

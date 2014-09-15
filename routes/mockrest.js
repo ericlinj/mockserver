@@ -68,3 +68,18 @@ exports.getMockDetails = function(req, res) {
     return;
   });
 };
+
+exports.initMockContext = function(req , res){
+  var prjId = req.param("projectId");
+  var contextScript = "";
+  if(prjId){
+  contextScript =
+    ';window.mocker_server_host = "'+ global.CONFIG.mocker_server_host+'";'
+    +'window.mocker_server_port = "'+ global.CONFIG.server.port+'";'
+    +'window.openmocker = 1;'
+    +'window.mocker_server_prefix = "'+ global.CONFIG.mocker_server_prefix+'";'
+    +'window.mocker_project_id = '+prjId+';'
+
+  }
+  res.send(contextScript);
+}
