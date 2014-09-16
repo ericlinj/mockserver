@@ -1,4 +1,4 @@
-ajaxmocker 介绍
+intrajaxmocker 介绍
 =====
 ## ajaxmocker是什么？
 前后端接口数据mock方案
@@ -68,20 +68,18 @@ component下安装方式:
 
 3. spa启动伊始进行初始化,需要在mock启动的回调中加入原有的启动脚本
 
-
+        //定义mocker
         var Mocker = require('mocker');
-            $(function () {
-              //init mocker
-              if(window.open_mocker && parseInt(window.open_mocker , 10) === 1){
-                new Mocker().start(function(){
-                  //your stuff ,such as boot,cache loading
-                  router.init();
-                });
-              }else{
-                  //your stuff ,such as boot,cache loading
-                  router.init();
-            }
-              })
+
+        //页面初始化
+        $(function() {
+          new Mocker().start(function() {
+            //do other stuff as it should be
+            boot();
+          });
+
+        });
+
 
 
 4. 启动client mocker完成
