@@ -11242,11 +11242,7 @@ module.exports = function(val){
   if (val !== val) return 'nan';
   if (val && val.nodeType === 1) return 'element';
 
-  val = val.valueOf
-    ? val.valueOf()
-    : Object.prototype.valueOf.apply(val)
-
-  return typeof val;
+  return typeof val.valueOf();
 };
 
 });
@@ -11386,7 +11382,6 @@ exports.isRelative = function(url){
 
 exports.isCrossDomain = function(url){
   url = exports.parse(url);
-  var location = exports.parse(window.location.href);
   return url.hostname !== location.hostname
     || url.port !== location.port
     || url.protocol !== location.protocol;
@@ -19132,6 +19127,1341 @@ Dialog.prototype.remove = function(){
 };
 
 });
+require.register("heatroom-clone/index.js", function(exports, require, module){
+/**
+ * Module dependencies.
+ */
+
+var type = require('type');
+
+/**
+ * Module exports.
+ */
+
+module.exports = clone;
+
+/**
+ * Clones objects.
+ *
+ * @param {Mixed} any object
+ * @api public
+ */
+
+function clone(obj){
+  switch (type(obj)) {
+    case 'object':
+      var copy = {};
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          copy[key] = clone(obj[key]);
+        }
+      }
+      return copy;
+
+    case 'array':
+      var copy = new Array(obj.length);
+      for (var i = 0, l = obj.length; i < l; i++) {
+        copy[i] = clone(obj[i]);
+      }
+      return copy;
+
+    case 'regexp':
+      // from millermedeiros/amd-utils - MIT
+      var flags = '';
+      flags += obj.multiline ? 'm' : '';
+      flags += obj.global ? 'g' : '';
+      flags += obj.ignoreCase ? 'i' : '';
+      return new RegExp(obj.source, flags);
+
+    case 'date':
+      return new Date(obj.getTime());
+
+    default: // string, number, boolean, …
+      return obj;
+  }
+}
+});
+require.register("heatroom-validate-form-explain/index.js", function(exports, require, module){
+var classes = require('classes');
+
+
+/**
+ * Expose `plugin`.
+ */
+
+module.exports = plugin;
+
+
+/**
+ * Apply a plugin to the message adapters.
+ *
+ * @param {Validator} validator
+ */
+
+function plugin (validator) {
+
+  var adapter = validator.adapter;
+  var el = adapter.el;
+  var valid = adapter.valid;
+  var invalid = adapter.invalid;
+  var clear = adapter.clear;
+
+  validator.valid(function (view) {
+    valid.apply(adapter, arguments);
+    var input = el(view);
+    classes(input).remove('error');
+  });
+
+  /**
+   * When invalid, add class `error`.
+   *
+   * @param {Element} el
+   * @param {String} message
+   */
+
+  validator.invalid(function (view) {
+    invalid.apply(adapter, arguments);
+    var input = el(view);
+    classes(input).add('error');
+  });
+
+};
+
+});
+require.register("component-props/index.js", function(exports, require, module){
+/**
+ * Global Names
+ */
+
+var globals = /\b(Array|Date|Object|Math|JSON)\b/g;
+
+/**
+ * Return immediate identifiers parsed from `str`.
+ *
+ * @param {String} str
+ * @param {String|Function} map function or prefix
+ * @return {Array}
+ * @api public
+ */
+
+module.exports = function(str, fn){
+  var p = unique(props(str));
+  if (fn && 'string' == typeof fn) fn = prefixed(fn);
+  if (fn) return map(str, p, fn);
+  return p;
+};
+
+/**
+ * Return immediate identifiers in `str`.
+ *
+ * @param {String} str
+ * @return {Array}
+ * @api private
+ */
+
+function props(str) {
+  return str
+    .replace(/\.\w+|\w+ *\(|"[^"]*"|'[^']*'|\/([^/]+)\//g, '')
+    .replace(globals, '')
+    .match(/[a-zA-Z_]\w*/g)
+    || [];
+}
+
+/**
+ * Return `str` with `props` mapped with `fn`.
+ *
+ * @param {String} str
+ * @param {Array} props
+ * @param {Function} fn
+ * @return {String}
+ * @api private
+ */
+
+function map(str, props, fn) {
+  var re = /\.\w+|\w+ *\(|"[^"]*"|'[^']*'|\/([^/]+)\/|[a-zA-Z_]\w*/g;
+  return str.replace(re, function(_){
+    if ('(' == _[_.length - 1]) return fn(_);
+    if (!~props.indexOf(_)) return _;
+    return fn(_);
+  });
+}
+
+/**
+ * Return unique array.
+ *
+ * @param {Array} arr
+ * @return {Array}
+ * @api private
+ */
+
+function unique(arr) {
+  var ret = [];
+
+  for (var i = 0; i < arr.length; i++) {
+    if (~ret.indexOf(arr[i])) continue;
+    ret.push(arr[i]);
+  }
+
+  return ret;
+}
+
+/**
+ * Map with prefix `str`.
+ */
+
+function prefixed(str) {
+  return function(_){
+    return str + _;
+  };
+}
+
+});
+require.register("component-to-function/index.js", function(exports, require, module){
+/**
+ * Module Dependencies
+ */
+
+var expr = require('props');
+
+/**
+ * Expose `toFunction()`.
+ */
+
+module.exports = toFunction;
+
+/**
+ * Convert `obj` to a `Function`.
+ *
+ * @param {Mixed} obj
+ * @return {Function}
+ * @api private
+ */
+
+function toFunction(obj) {
+  switch ({}.toString.call(obj)) {
+    case '[object Object]':
+      return objectToFunction(obj);
+    case '[object Function]':
+      return obj;
+    case '[object String]':
+      return stringToFunction(obj);
+    case '[object RegExp]':
+      return regexpToFunction(obj);
+    default:
+      return defaultToFunction(obj);
+  }
+}
+
+/**
+ * Default to strict equality.
+ *
+ * @param {Mixed} val
+ * @return {Function}
+ * @api private
+ */
+
+function defaultToFunction(val) {
+  return function(obj){
+    return val === obj;
+  }
+}
+
+/**
+ * Convert `re` to a function.
+ *
+ * @param {RegExp} re
+ * @return {Function}
+ * @api private
+ */
+
+function regexpToFunction(re) {
+  return function(obj){
+    return re.test(obj);
+  }
+}
+
+/**
+ * Convert property `str` to a function.
+ *
+ * @param {String} str
+ * @return {Function}
+ * @api private
+ */
+
+function stringToFunction(str) {
+  // immediate such as "> 20"
+  if (/^ *\W+/.test(str)) return new Function('_', 'return _ ' + str);
+
+  // properties such as "name.first" or "age > 18" or "age > 18 && age < 36"
+  return new Function('_', 'return ' + get(str));
+}
+
+/**
+ * Convert `object` to a function.
+ *
+ * @param {Object} object
+ * @return {Function}
+ * @api private
+ */
+
+function objectToFunction(obj) {
+  var match = {}
+  for (var key in obj) {
+    match[key] = typeof obj[key] === 'string'
+      ? defaultToFunction(obj[key])
+      : toFunction(obj[key])
+  }
+  return function(val){
+    if (typeof val !== 'object') return false;
+    for (var key in match) {
+      if (!(key in val)) return false;
+      if (!match[key](val[key])) return false;
+    }
+    return true;
+  }
+}
+
+/**
+ * Built the getter function. Supports getter style functions
+ *
+ * @param {String} str
+ * @return {String}
+ * @api private
+ */
+
+function get(str) {
+  var props = expr(str);
+  if (!props.length) return '_.' + str;
+
+  var val;
+  for(var i = 0, prop; prop = props[i]; i++) {
+    val = '_.' + prop;
+    val = "('function' == typeof " + val + " ? " + val + "() : " + val + ")";
+    str = str.replace(new RegExp(prop, 'g'), val);
+  }
+
+  return str;
+}
+
+});
+require.register("component-each/index.js", function(exports, require, module){
+
+/**
+ * Module dependencies.
+ */
+
+var toFunction = require('to-function');
+var type;
+
+try {
+  type = require('type-component');
+} catch (e) {
+  type = require('type');
+}
+
+/**
+ * HOP reference.
+ */
+
+var has = Object.prototype.hasOwnProperty;
+
+/**
+ * Iterate the given `obj` and invoke `fn(val, i)`.
+ *
+ * @param {String|Array|Object} obj
+ * @param {Function} fn
+ * @api public
+ */
+
+module.exports = function(obj, fn){
+  fn = toFunction(fn);
+  switch (type(obj)) {
+    case 'array':
+      return array(obj, fn);
+    case 'object':
+      if ('number' == typeof obj.length) return array(obj, fn);
+      return object(obj, fn);
+    case 'string':
+      return string(obj, fn);
+  }
+};
+
+/**
+ * Iterate string chars.
+ *
+ * @param {String} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function string(obj, fn) {
+  for (var i = 0; i < obj.length; ++i) {
+    fn(obj.charAt(i), i);
+  }
+}
+
+/**
+ * Iterate object keys.
+ *
+ * @param {Object} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function object(obj, fn) {
+  for (var key in obj) {
+    if (has.call(obj, key)) {
+      fn(key, obj[key]);
+    }
+  }
+}
+
+/**
+ * Iterate array-ish.
+ *
+ * @param {Array|Object} obj
+ * @param {Function} fn
+ * @api private
+ */
+
+function array(obj, fn) {
+  for (var i = 0; i < obj.length; ++i) {
+    fn(obj[i], i);
+  }
+}
+
+});
+require.register("component-value/index.js", function(exports, require, module){
+
+/**
+ * Module dependencies.
+ */
+
+var typeOf = require('type');
+
+/**
+ * Set or get `el`'s' value.
+ *
+ * @param {Element} el
+ * @param {Mixed} val
+ * @return {Mixed}
+ * @api public
+ */
+
+module.exports = function(el, val){
+  if (2 == arguments.length) return set(el, val);
+  return get(el);
+};
+
+/**
+ * Get `el`'s value.
+ */
+
+function get(el) {
+  switch (type(el)) {
+    case 'checkbox':
+    case 'radio':
+      if (el.checked) {
+        var attr = el.getAttribute('value');
+        return null == attr ? true : attr;
+      } else {
+        return false;
+      }
+    case 'radiogroup':
+      for (var i = 0, radio; radio = el[i]; i++) {
+        if (radio.checked) return radio.value;
+      }
+      break;
+    case 'select':
+      for (var i = 0, option; option = el.options[i]; i++) {
+        if (option.selected) return option.value;
+      }
+      break;
+    default:
+      return el.value;
+  }
+}
+
+/**
+ * Set `el`'s value.
+ */
+
+function set(el, val) {
+  switch (type(el)) {
+    case 'checkbox':
+    case 'radio':
+      if (val) {
+        el.checked = true;
+      } else {
+        el.checked = false;
+      }
+      break;
+    case 'radiogroup':
+      for (var i = 0, radio; radio = el[i]; i++) {
+        radio.checked = radio.value === val;
+      }
+      break;
+    case 'select':
+      for (var i = 0, option; option = el.options[i]; i++) {
+        option.selected = option.value === val;
+      }
+      break;
+    default:
+      el.value = val;
+  }
+}
+
+/**
+ * Element type.
+ */
+
+function type(el) {
+  var group = 'array' == typeOf(el) || 'object' == typeOf(el);
+  if (group) el = el[0];
+  var name = el.nodeName.toLowerCase();
+  var type = el.getAttribute('type');
+
+  if (group && type && 'radio' == type.toLowerCase()) return 'radiogroup';
+  if ('input' == name && type && 'checkbox' == type.toLowerCase()) return 'checkbox';
+  if ('input' == name && type && 'radio' == type.toLowerCase()) return 'radio';
+  if ('select' == name) return 'select';
+  return name;
+}
+
+});
+require.register("component-bind/index.js", function(exports, require, module){
+/**
+ * Slice reference.
+ */
+
+var slice = [].slice;
+
+/**
+ * Bind `obj` to `fn`.
+ *
+ * @param {Object} obj
+ * @param {Function|String} fn or string
+ * @return {Function}
+ * @api public
+ */
+
+module.exports = function(obj, fn){
+  if ('string' == typeof fn) fn = obj[fn];
+  if ('function' != typeof fn) throw new Error('bind() requires a function');
+  var args = slice.call(arguments, 2);
+  return function(){
+    return fn.apply(obj, args.concat(slice.call(arguments)));
+  }
+};
+
+});
+require.register("segmentio-bind-all/index.js", function(exports, require, module){
+
+try {
+  var bind = require('bind');
+  var type = require('type');
+} catch (e) {
+  var bind = require('bind-component');
+  var type = require('type-component');
+}
+
+module.exports = function (obj) {
+  for (var key in obj) {
+    var val = obj[key];
+    if (type(val) === 'function') obj[key] = bind(obj, obj[key]);
+  }
+  return obj;
+};
+});
+require.register("ianstormtaylor-bind/index.js", function(exports, require, module){
+
+try {
+  var bind = require('bind');
+} catch (e) {
+  var bind = require('bind-component');
+}
+
+var bindAll = require('bind-all');
+
+
+/**
+ * Expose `bind`.
+ */
+
+module.exports = exports = bind;
+
+
+/**
+ * Expose `bindAll`.
+ */
+
+exports.all = bindAll;
+
+
+/**
+ * Expose `bindMethods`.
+ */
+
+exports.methods = bindMethods;
+
+
+/**
+ * Bind `methods` on `obj` to always be called with the `obj` as context.
+ *
+ * @param {Object} obj
+ * @param {String} methods...
+ */
+
+function bindMethods (obj, methods) {
+  methods = [].slice.call(arguments, 1);
+  for (var i = 0, method; method = methods[i]; i++) {
+    obj[method] = bind(obj, obj[method]);
+  }
+  return obj;
+}
+});
+require.register("timoxley-next-tick/index.js", function(exports, require, module){
+"use strict"
+
+if (typeof setImmediate == 'function') {
+  module.exports = function(f){ setImmediate(f) }
+}
+// legacy node.js
+else if (typeof process != 'undefined' && typeof process.nextTick == 'function') {
+  module.exports = process.nextTick
+}
+// fallback for other environments / postMessage behaves badly on IE8
+else if (typeof window == 'undefined' || window.ActiveXObject || !window.postMessage) {
+  module.exports = function(f){ setTimeout(f) };
+} else {
+  var q = [];
+
+  window.addEventListener('message', function(){
+    var i = 0;
+    while (i < q.length) {
+      try { q[i++](); }
+      catch (e) {
+        q = q.slice(i);
+        window.postMessage('tic!', '*');
+        throw e;
+      }
+    }
+    q.length = 0;
+  }, true);
+
+  module.exports = function(fn){
+    if (!q.length) window.postMessage('tic!', '*');
+    q.push(fn);
+  }
+}
+
+});
+require.register("segmentio-validator/index.js", function(exports, require, module){
+
+var ware = require('ware');
+var each;
+
+/**
+ * Try to require from component and node
+ */
+
+try {
+  each = require('each');
+} catch (err) {
+  each = require('each-component');
+}
+
+/**
+ * Expose `Validator`.
+ */
+
+module.exports = Validator;
+
+/**
+ * Initialize a new `Validator`.
+ */
+
+function Validator () {
+  if (!(this instanceof Validator)) return new Validator();
+  this.rules = [];
+  this._optional = false;
+}
+
+/**
+ * Add a new rule `fn`, with optional `context`.
+ *
+ * @param {Function} fn
+ * @param {Mixed} context (optional)
+ * @return {Validator}
+ */
+
+Validator.prototype.rule = function (fn, context) {
+  this.rules.push({
+    fn: fn,
+    context: context
+  });
+  return this;
+};
+
+/**
+ * Kick off the validation against all our rules.
+ *
+ * @param {Function} callback(err, valid, [context])
+ * @return {Validator}
+ */
+
+Validator.prototype.validate = function (value, callback) {
+  var rules = this.rules;
+  var optional = this._optional;
+  var middleware = ware();
+
+  each(rules, function (rule) {
+    middleware.use(function (value, done) {
+
+      // handle optional setting
+      if (!value && optional) return done();
+
+      // dont handle errors so that things like fs.exists work
+      var finish = function (err, valid) {
+        if (err) return done(err);
+        if (!valid) return done(new ValidationError(rule));
+        done();
+      };
+
+      // async
+      if (rule.fn.length > 1) {
+        return rule.fn(value, function(){
+          finish.apply(null, arguments);
+        });
+      }
+      //sync
+      var val = rule.fn(value);
+      finish(null, val);
+    });
+  });
+
+  middleware.run(value, function (err) {
+    if (!err) return callback(null, true);
+    if (err && err instanceof ValidationError) {
+      return callback(null, false, err.rule.context);
+    }
+    return callback(err);
+  });
+
+  return this;
+};
+
+/**
+ * Make the validator pass on empty values.
+ *
+ * @param {Boolean} optional
+ * @return {Validator}
+ */
+
+Validator.prototype.optional = function (optional) {
+  this._optional = false === optional ? false : true;
+  return this;
+};
+
+/**
+ * A simple error constructor to store the rule.
+ */
+
+function ValidationError (rule) {
+  this.rule = rule;
+}
+});
+require.register("heatroom-validate-form/lib/adapter.js", function(exports, require, module){
+
+var classes = require('classes');
+var domify = require('domify');
+var $ = require('jquery');
+var type = require('type');
+var value = require('value');
+
+
+/**
+ * Default element accessor.
+ *
+ * @param {Element|Object} view
+ */
+
+exports.el = function (view) {
+  if (view.el) return view.el; // handle views
+  return view;
+};
+
+
+/**
+ * Default value method.
+ *
+ * @param {Element|Object} view
+ */
+
+exports.value = function (view) {
+  var el = this.el(view);
+  if ('function' == typeof view.value) return view.value();
+  if ('element' != type(el)) return;
+  return value(el);
+};
+
+
+/**
+ * Default valid method.
+ *
+ * @param {Element|Object} view
+ */
+
+exports.valid = function (view) {
+  this.clear(view);
+  var el = this.el(view);
+  if ('function' == typeof view.valid) return view.valid();
+  if ('element' != type(el)) return;
+
+  classes(el).add('valid');
+};
+
+
+/**
+ * Default invalid method.
+ *
+ * @param {Element|Object} view
+ * @param {String} msg
+ */
+
+exports.invalid = function (view, msg) {
+  this.clear(view);
+  var el = this.el(view);
+  if ('function' == typeof view.invalid) return view.invalid(msg);
+  if ('element' != type(el)) return;
+
+  classes(el).add('invalid');
+  if (msg && el.parentNode) {
+    var message = $('<div class="ui-form-explain validator-message">');
+    message.html(msg);
+    // el.parentNode.appendChild(message);
+    $(el).parents('.ui-form-item').append(message);
+  }
+};
+
+
+/**
+ * Default clear validation method.
+ *
+ * @param {Element|Object} view
+ */
+
+exports.clear = function (view) {
+  var el = this.el(view);
+  if ('function' == typeof view.valid) return view.valid();
+  if ('element' != type(el)) return;
+
+  classes(el).remove('valid').remove('invalid');
+  var message;
+  // while (message = $(el).parents('.ui-form.item').find('.validator-message')[0]) {
+  //   if (el.parentNode) el.parentNode.removeChild(message);
+  // }
+  $(el).parents('.ui-form-item').find('.ui-form-explain').remove();
+};
+});
+require.register("heatroom-validate-form/lib/field.js", function(exports, require, module){
+
+var adapter = require('./adapter');
+var bind = require('event').bind;
+var each = require('each');
+var type = require('type');
+var Validator = require('validator');
+var validators = require('./rule');
+
+
+/**
+ * Expose `Field`.
+ */
+
+module.exports = Field;
+
+
+/**
+ * Initialize a new `Field`.
+ *
+ * @param {Element} el
+ * @param {Object} adapter
+ * @param {Object} validators
+ */
+
+function Field (el, validator, opts) {
+  this.el = el;
+  this.opts = opts;
+  this.validator = validator;
+  this.adapter = validator.adapter;
+  this.validators = validator.validators;
+  this._validator = new Validator().optional(!opts.validateEmpty);
+  this._valid = true;
+  this.form = validator.form;
+  this.bind();
+}
+
+Field.prototype.bind = function () {
+  var self = this;
+  bind(this.el, 'focus', function (e) {
+    self.adapter.valid(self.el);
+  });
+  return this;
+}
+
+
+/**
+ * Add a validation `fn` displaying `message` when invalid.
+ *
+ * @param {Function|RegExp|String} fn
+ * @param {Mixed} settings (optional)
+ * @param {String} message (optional)
+ * @return {Field}
+ */
+
+Field.prototype.is = function (fn) {
+  var settings = arguments.length < 3 ? [] : [].slice.call(arguments, 1, arguments.length - 1);
+  var message = arguments.length == 1 ? '' : arguments[arguments.length - 1];
+
+  // required
+  if ('required' == fn) this._validator.optional(false);
+
+  // regexp
+  if ('regexp' == type(fn)) fn = this.validators.regexp(fn);
+
+  // shorthand
+  if ('string' == type(fn)) fn = this.validators[fn];
+
+  // handle fns that take settings
+  if (settings.length) fn = fn.apply(null, settings);
+
+  this._validator.rule(fn, message);
+  return this;
+};
+
+
+/**
+ * Validate our element against all of its rules, and `callback(valid)`.
+ *
+ * @param {Function} callback (optional)
+ * @return {Field}
+ */
+
+Field.prototype.validate = function (callback) {
+  var self = this;
+  var value = this.adapter.value(this.el);
+
+  this._validator.validate(value, function (err, valid, msg) {
+    valid
+      ? self.adapter.valid(self.el)
+      : self.adapter.invalid(self.el, msg);
+    callback && callback(err, valid, msg);
+  });
+
+  return this;
+};
+
+
+/**
+ * Set an `event` trigger for validation.
+ *
+ * @param {String} event
+ * @return {Field}
+ */
+
+Field.prototype.on = function (event) {
+  var self = this;
+  bind(this.el, event, function (e) {
+    // don't validate an empty input on blur, that's annoying
+    if ('blur' === event && !self.adapter.value(self.el) && !self.opts.validateEmpty) return;
+    self.validate();
+  });
+  return this;
+};
+});
+require.register("heatroom-validate-form/lib/index.js", function(exports, require, module){
+
+var $ = require('jquery');
+var adapter = require('./adapter');
+var bind = require('bind');
+var explain = require('validate-form-explain');
+var event = require('event');
+var clone = require('clone');
+var Field = require('./field');
+var Vldtr = require('validator');
+var validators = require('./rule');
+
+
+/**
+ * Expose `Validator`.
+ */
+
+module.exports = exports = Validator;
+
+
+/**
+ * Initialize a new `Validator`.
+ *
+ * @param {Element} form
+ */
+
+function Validator (form) {
+  if (!(this instanceof Validator)) return new Validator(form);
+  this.form = form || $(document);
+  this.opts = { validateEmpty: false };
+  this._validator = new Vldtr();
+  this.adapter = clone(adapter);
+  this.validators = clone(validators);
+  // this.submit = bind(this, this.submit);
+  this.action = $('.ok');
+  this._event = 'blur';
+  this.use(explain);
+  this.bind(this.action);
+}
+
+
+/**
+ * Use a `plugin`.
+ *
+ * @param {Function} plugin
+ * @return {Validator}
+ */
+
+Validator.prototype.use = function (plugin) {
+  plugin(this);
+  return this;
+};
+
+/**
+ * Set an option
+ * @param {String} key
+ * @param {Any} value
+ */
+
+Validator.prototype.set = function(key, val) {
+  var opts = {};
+  if('object' === typeof key) opts = key;
+  if('string' === typeof key && 'undefined' !== typeof val) opts[key] = val;
+  this.opts = $.extend(this.opts, opts);
+  return this;
+};
+
+
+/**
+ * Set an aditional trigger `event` for individual field validation.
+ *
+ * @param {String} event
+ * @return {Validator}
+ */
+
+Validator.prototype.on = function (event) {
+  this._event = event;
+  return this;
+};
+
+
+/**
+ * Add a field `el` to be validated.
+ *
+ * @param {Element|String} el
+ * @return {Validator}
+ */
+
+Validator.prototype.field = function (el) {
+  if ('string' === typeof el) el = this.form.find('[name="' + el + '"]')[0];
+  var field = new Field(el, this, this.opts);
+  if (this._event) field.on(this._event);
+
+  this._validator.rule(function (val, done) {
+    field.validate(done);
+  });
+
+  // let us chain `is` like we were the field
+  this.is = function () {
+    field.is.apply(field, arguments);
+    return this;
+  };
+
+  return this;
+};
+
+/**
+ * Validate each field and `callback(valid)`.
+ *
+ * @param {Function} callback
+ * @return {Validator}
+ */
+
+Validator.prototype.validate = function (callback) {
+  this._validator.validate(null, function (err, valid, msg) {
+    callback && callback(err, valid, msg);
+  });
+  return this;
+};
+
+
+/**
+ * Define a view-specific validator `fn`.
+ *
+ * @param {String|Object} name
+ * @param {Function} fn
+ */
+
+Validator.prototype.validator = function (name, fn) {
+  if ('object' == typeof name) {
+    for (var key in name) this.validator(key, name[key]);
+    return;
+  }
+
+  this.validators[name] = fn;
+};
+
+
+/**
+ * Define a view-specific el adapter `fn`.
+ *
+ * @param {Function} fn
+ * @return {Validator}
+ */
+
+Validator.prototype.el = function (fn) {
+  this.adapter.el = fn;
+  return this;
+};
+
+
+/**
+ * Define a view-specific value adapter `fn`.
+ *
+ * @param {Function} fn
+ * @return {Validator}
+ */
+
+Validator.prototype.value = function (fn) {
+  this.adapter.value = fn;
+  return this;
+};
+
+
+/**
+ * Define a view-specific valid adapter `fn`.
+ *
+ * @param {Function} fn
+ * @return {Validator}
+ */
+
+Validator.prototype.valid = function (fn) {
+  this.adapter.valid = fn;
+  return this;
+};
+
+
+/**
+ * Define a view-specific invalid adapter `fn`.
+ *
+ * @param {Function} fn
+ * @return {Validator}
+ */
+
+Validator.prototype.invalid = function (fn) {
+  this.adapter.invalid = fn;
+  return this;
+};
+
+
+/**
+ * Define a view-specific clear adapter `fn`.
+ *
+ * @param {Function} fn
+ * @return {Validator}
+ */
+
+Validator.prototype.clear = function (fn) {
+  this.adapter.clear = fn;
+  return this;
+};
+
+Validator.prototype.cb = function(callback) {
+  this._callback = callback;
+  return this;
+};
+
+
+/**
+ * Bind the form's submit handler.
+ *
+ * @return {Validator}
+ * @api private
+ */
+
+Validator.prototype.bind = function () {
+  var self = this;
+  // capture to preempt other handlers
+  this.action.on('click', function(e){self.submit(e);});
+  //prevent the browser from validating for us
+  this.form.attr('novalidate', true);
+  return this;
+};
+
+
+/**
+ * Unind the form's submit handler.
+ *
+ * @return {Validator}
+ * @api private
+ */
+
+Validator.prototype.unbind = function () {
+  // capture to preempt other handlers
+  this.action.off('click', function(){self.submit(e);});
+  //enbale browser from validation
+  this.form.removeAttr('novalidate');
+  return this;
+};
+
+
+/**
+ * Form submit handler.
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Validator.prototype.submit = function (e) {
+  // e.stopImmediatePropagation();
+  e.preventDefault();
+  var self = this;
+  this.validate(function (err, valid) {
+    if (!err && valid) {
+      self.unbind();
+      self._callback(e);
+    }
+    return;
+  });
+};
+});
+require.register("heatroom-validate-form/lib/rule.js", function(exports, require, module){
+
+var trim = require('trim');
+
+/**
+ * Required.
+ */
+
+exports.required = trim;
+
+
+/**
+ * Email addresses.
+ */
+
+exports.email = function (val) {
+  return /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(trim(val));
+};
+
+/**
+ * URLs.
+ */
+
+exports.url = function (val) {
+  return /^(https|http)(:\/\/).*/.test(trim(val));
+};
+
+exports.host = function (val) {
+  return /^(https|http)(:\/\/).*/.test('http://' + trim(val));
+};
+
+/**
+ * Number.
+ *
+ * Note: this won't work for straight up element validation since they
+ * always return strings.
+ */
+
+exports.number = function (val) {
+  return /^[1-9][0-9]*(\.[0-9]+)?$|^0\.[0-9]+$|^0$/.test(trim(val));
+};
+
+/**
+ * positive number.
+ *
+ */
+exports.positive = function (val) {
+  return /^\s*\d+\s*$/.test(trim(val));
+};
+
+/* fixed number*/
+exports.fixed = function (val) {
+  return /^[0-9]+(.[0-9]{0,2})?$/.test(trim(val));
+};
+
+/**
+ * Regexp.
+ *
+ * @param {RegExp|String} regexp
+ */
+
+exports.regexp = function (regexp) {
+  if ('string' === typeof regexp) regexp = new RegExp(regexp);
+  return function (val) {
+    return regexp.test(val);
+  };
+};
+
+/**
+ * Minimum number.
+ *
+ * @param {Number} min
+ */
+
+exports.min =
+exports.minimum = function (num) {
+  return function (val) {
+    return Number(val) >= Number(num);
+  };
+};
+
+/**
+ * Maximum number.
+ *
+ * @param {Number} max
+ */
+
+exports.max =
+exports.maximum = function (num) {
+  return function (val) {
+   return Number(val) <= Number(num);
+  };
+};
+
+
+/**
+ * Minimum length.
+ *
+ * @param {Number} length
+ */
+
+exports.minLength = function (length) {
+  return function (val) {
+    var _val = val.replace(/[^\x00-\xff]/g,'**');
+    var len = _val.length;
+    return len >= Number(length);
+  };
+};
+
+/**
+ * Maximum length.
+ * @param {Number} length
+ */
+
+exports.maxLength = function (length) {
+  return function (val) {
+    var _val = val.replace(/[^\x00-\xff]/g,'**');
+    var len = _val.length;
+    return len <= Number(length);
+  }
+};
+});
 require.register("apputil/index.js", function(exports, require, module){
 var AppUtil = {},
   $ = require('jquery');
@@ -19187,23 +20517,50 @@ var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
 var jsonEditor = null;
 var appUtil = require('appUtil');
+var validate = require('validate-form');
 
 exports.preAdd = function(context, next) {
+  var me = this;
   appUtil.initProjectSelect("project_id");
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
   initJsonCheck();
+  initValidator($('#mockadd-form'));
   $("#btn-add-submit").click(function() {
     try {
       var mockJson = jsonEditor.getText();
       $("input[name=mock_json]").val(mockJson);
-      $("form")[0].submit()
+      trimUrl();
+      me.validator.cb(function() {
+        $('#mockadd-form')[0].submit();
+      })
+
     } catch (e) {
       alert("mock数据错误：" + e);
     }
   })
 };
+
+function initValidator(jqForm) {
+  //validate form
+  this.validator = validate(jqForm)
+    .field('title')
+    .is('required', '请输入接口标题！')
+    .is('maxLength', 50, '接口标题名称超长！')
+    .field('url')
+    .is('required', '请输入接口URL！')
+    .is('maxLength', 255, '接口URL名称超长！')
+    .field('result_json')
+    .is('required', '请输入“输出参数”！');
+}
+
+function trimUrl() {
+  var url = $("input[name=url]").val();
+  url = url.replace(/\s/g, "");
+  $("input[name=url]").val(url);
+
+}
 exports.preEdit = function(context, next) {
   var me = this;
   appUtil.initProjectSelect("project_id", $("select[name=project_id]").attr("data_project_id"));
@@ -19213,6 +20570,7 @@ exports.preEdit = function(context, next) {
   })
 
   initJsonCheck();
+  initValidator($('#mockedit-form'));
   try {
     var json = $("input[name=mock_json]").val() || "{}";
     jsonEditor.setText(json);
@@ -19224,7 +20582,11 @@ exports.preEdit = function(context, next) {
       var mockJson = jsonEditor.getText();
       $("input[name=mock_json]").val(mockJson);
       $("input[name=is_stay]").val(0);
-      $("form")[0].submit()
+
+      trimUrl();
+      me.validator.cb(function() {
+        $('#mockedit-form')[0].submit();
+      })
     } catch (e) {
       alert("mock数据错误：" + e);
     }
@@ -19240,20 +20602,24 @@ exports.preEdit = function(context, next) {
 
     $("input[name=mock_json]").val(mockJson);
     $("input[name=is_stay]").val(1);
+    trimUrl();
 
-    $.ajax({
-      url: "/mock/doEdit",
-      data: $("form").eq(0).serialize(),
-      type: "POST"
-    }).success(function(res) {
-      if (res.status == 1) {
-        alert("保存成功！");
-      } else {
-        alert("出错了：" + res.msg);
-      }
-    }).error(function(e) {
-      console.error(e);
+    me.validator.cb(function() {
+      $.ajax({
+        url: "/mock/doEdit",
+        data: $("form").eq(0).serialize(),
+        type: "POST"
+      }).success(function(res) {
+        if (res.status == 1) {
+          alert("保存成功！");
+        } else {
+          alert("出错了：" + res.msg);
+        }
+      }).error(function(e) {
+        console.error(e);
+      })
     })
+
   })
 };
 
@@ -19336,13 +20702,13 @@ exports.list = function(context, next) {
     })
     //export pdf
     $('.export-pdf').click(function() {
-        var prjName = $('select[name=q_project] option:checked').text();
-        var prjId = $('select[name=q_project]').val();
-        if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
-          return false;
-        }
-        var para = "prjId=" + prjId + "&prjName=" + prjName;
-        window.open('/project/exportExcel?' + para , '_blank ')
+      var prjName = $('select[name=q_project] option:checked').text();
+      var prjId = $('select[name=q_project]').val();
+      if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
+        return false;
+      }
+      var para = "prjId=" + prjId + "&prjName=" + prjName;
+      window.open('/project/exportExcel?' + para, '_blank ')
     })
 
     ///////////////
@@ -19406,6 +20772,13 @@ $(function() {
 
 
 
+
+
+
+
+
+
+
 require.register("component-overlay/template.html", function(exports, require, module){
 module.exports = '<div class="overlay hidden"></div>\n';
 });
@@ -19414,6 +20787,13 @@ module.exports = '<div class="overlay hidden"></div>\n';
 require.register("component-dialog/template.html", function(exports, require, module){
 module.exports = '<div class="dialog hide">\n  <div class="content">\n    <span class="title">Title</span>\n    <a href="#" class="close">&times;<em>close</em></a>\n    <div class="body">\n      <p>Message</p>\n    </div>\n  </div>\n</div>\n';
 });
+
+
+
+
+
+
+
 
 require.alias("boot/index.js", "stars/deps/boot/index.js");
 require.alias("boot/index.js", "stars/deps/boot/index.js");
@@ -19503,6 +20883,70 @@ require.alias("component-indexof/index.js", "component-classes/deps/indexof/inde
 
 require.alias("component-query/index.js", "component-dialog/deps/query/index.js");
 
+require.alias("heatroom-validate-form/lib/adapter.js", "mock/deps/validate-form/lib/adapter.js");
+require.alias("heatroom-validate-form/lib/field.js", "mock/deps/validate-form/lib/field.js");
+require.alias("heatroom-validate-form/lib/index.js", "mock/deps/validate-form/lib/index.js");
+require.alias("heatroom-validate-form/lib/rule.js", "mock/deps/validate-form/lib/rule.js");
+require.alias("heatroom-validate-form/lib/index.js", "mock/deps/validate-form/index.js");
+require.alias("component-jquery/index.js", "heatroom-validate-form/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "heatroom-validate-form/deps/jquery/index.js");
+require.alias("component-jquery/index.js", "component-jquery/index.js");
+require.alias("component-classes/index.js", "heatroom-validate-form/deps/classes/index.js");
+require.alias("component-indexof/index.js", "component-classes/deps/indexof/index.js");
+
+require.alias("heatroom-clone/index.js", "heatroom-validate-form/deps/clone/index.js");
+require.alias("heatroom-clone/index.js", "heatroom-validate-form/deps/clone/index.js");
+require.alias("component-type/index.js", "heatroom-clone/deps/type/index.js");
+
+require.alias("heatroom-clone/index.js", "heatroom-clone/index.js");
+require.alias("heatroom-validate-form-explain/index.js", "heatroom-validate-form/deps/validate-form-explain/index.js");
+require.alias("component-classes/index.js", "heatroom-validate-form-explain/deps/classes/index.js");
+require.alias("component-indexof/index.js", "component-classes/deps/indexof/index.js");
+
+require.alias("component-domify/index.js", "heatroom-validate-form/deps/domify/index.js");
+
+require.alias("component-each/index.js", "heatroom-validate-form/deps/each/index.js");
+require.alias("component-to-function/index.js", "component-each/deps/to-function/index.js");
+require.alias("component-props/index.js", "component-to-function/deps/props/index.js");
+
+require.alias("component-type/index.js", "component-each/deps/type/index.js");
+
+require.alias("component-event/index.js", "heatroom-validate-form/deps/event/index.js");
+
+require.alias("component-trim/index.js", "heatroom-validate-form/deps/trim/index.js");
+
+require.alias("component-type/index.js", "heatroom-validate-form/deps/type/index.js");
+
+require.alias("component-value/index.js", "heatroom-validate-form/deps/value/index.js");
+require.alias("component-value/index.js", "heatroom-validate-form/deps/value/index.js");
+require.alias("component-type/index.js", "component-value/deps/type/index.js");
+
+require.alias("component-value/index.js", "component-value/index.js");
+require.alias("ianstormtaylor-bind/index.js", "heatroom-validate-form/deps/bind/index.js");
+require.alias("component-bind/index.js", "ianstormtaylor-bind/deps/bind/index.js");
+
+require.alias("segmentio-bind-all/index.js", "ianstormtaylor-bind/deps/bind-all/index.js");
+require.alias("component-bind/index.js", "segmentio-bind-all/deps/bind/index.js");
+
+require.alias("component-type/index.js", "segmentio-bind-all/deps/type/index.js");
+
+require.alias("segmentio-validator/index.js", "heatroom-validate-form/deps/validator/index.js");
+require.alias("component-each/index.js", "segmentio-validator/deps/each/index.js");
+require.alias("component-to-function/index.js", "component-each/deps/to-function/index.js");
+require.alias("component-props/index.js", "component-to-function/deps/props/index.js");
+
+require.alias("component-type/index.js", "component-each/deps/type/index.js");
+
+require.alias("timoxley-next-tick/index.js", "segmentio-validator/deps/next-tick/index.js");
+
+require.alias("segmentio-ware/lib/index.js", "segmentio-validator/deps/ware/lib/index.js");
+require.alias("segmentio-ware/lib/index.js", "segmentio-validator/deps/ware/index.js");
+require.alias("segmentio-ware/lib/index.js", "segmentio-ware/index.js");
+require.alias("yields-prevent/index.js", "heatroom-validate-form/deps/prevent/index.js");
+
+require.alias("yields-stop/index.js", "heatroom-validate-form/deps/stop/index.js");
+
+require.alias("heatroom-validate-form/lib/index.js", "heatroom-validate-form/index.js");
 require.alias("ianstormtaylor-router/lib/context.js", "mock/deps/router/lib/context.js");
 require.alias("ianstormtaylor-router/lib/index.js", "mock/deps/router/lib/index.js");
 require.alias("ianstormtaylor-router/lib/route.js", "mock/deps/router/lib/route.js");

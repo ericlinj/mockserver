@@ -6,23 +6,50 @@ var jsonMinify = new JsonMinify;
 var Dialog = require('dialog');
 var jsonEditor = null;
 var appUtil = require('appUtil');
+var validate = require('validate-form');
 
 exports.preAdd = function(context, next) {
+  var me = this;
   appUtil.initProjectSelect("project_id");
   $('.cancel').click(function() {
     window.location.href = "/mock/list";
   })
   initJsonCheck();
+  initValidator($('#mockadd-form'));
   $("#btn-add-submit").click(function() {
     try {
       var mockJson = jsonEditor.getText();
       $("input[name=mock_json]").val(mockJson);
-      $("form")[0].submit()
+      trimUrl();
+      me.validator.cb(function() {
+        $('#mockadd-form')[0].submit();
+      })
+
     } catch (e) {
       alert("mock数据错误：" + e);
     }
   })
 };
+
+function initValidator(jqForm) {
+  //validate form
+  this.validator = validate(jqForm)
+    .field('title')
+    .is('required', '请输入接口标题！')
+    .is('maxLength', 50, '接口标题名称超长！')
+    .field('url')
+    .is('required', '请输入接口URL！')
+    .is('maxLength', 255, '接口URL名称超长！')
+    .field('result_json')
+    .is('required', '请输入“输出参数”！');
+}
+
+function trimUrl() {
+  var url = $("input[name=url]").val();
+  url = url.replace(/\s/g, "");
+  $("input[name=url]").val(url);
+
+}
 exports.preEdit = function(context, next) {
   var me = this;
   appUtil.initProjectSelect("project_id", $("select[name=project_id]").attr("data_project_id"));
@@ -32,6 +59,7 @@ exports.preEdit = function(context, next) {
   })
 
   initJsonCheck();
+  initValidator($('#mockedit-form'));
   try {
     var json = $("input[name=mock_json]").val() || "{}";
     jsonEditor.setText(json);
@@ -43,7 +71,11 @@ exports.preEdit = function(context, next) {
       var mockJson = jsonEditor.getText();
       $("input[name=mock_json]").val(mockJson);
       $("input[name=is_stay]").val(0);
-      $("form")[0].submit()
+
+      trimUrl();
+      me.validator.cb(function() {
+        $('#mockedit-form')[0].submit();
+      })
     } catch (e) {
       alert("mock数据错误：" + e);
     }
@@ -59,20 +91,24 @@ exports.preEdit = function(context, next) {
 
     $("input[name=mock_json]").val(mockJson);
     $("input[name=is_stay]").val(1);
+    trimUrl();
 
-    $.ajax({
-      url: "/mock/doEdit",
-      data: $("form").eq(0).serialize(),
-      type: "POST"
-    }).success(function(res) {
-      if (res.status == 1) {
-        alert("保存成功！");
-      } else {
-        alert("出错了：" + res.msg);
-      }
-    }).error(function(e) {
-      console.error(e);
+    me.validator.cb(function() {
+      $.ajax({
+        url: "/mock/doEdit",
+        data: $("form").eq(0).serialize(),
+        type: "POST"
+      }).success(function(res) {
+        if (res.status == 1) {
+          alert("保存成功！");
+        } else {
+          alert("出错了：" + res.msg);
+        }
+      }).error(function(e) {
+        console.error(e);
+      })
     })
+
   })
 };
 
@@ -155,13 +191,13 @@ exports.list = function(context, next) {
     })
     //export pdf
     $('.export-pdf').click(function() {
-        var prjName = $('select[name=q_project] option:checked').text();
-        var prjId = $('select[name=q_project]').val();
-        if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
-          return false;
-        }
-        var para = "prjId=" + prjId + "&prjName=" + prjName;
-        window.open('/project/exportExcel?' + para , '_blank ')
+      var prjName = $('select[name=q_project] option:checked').text();
+      var prjId = $('select[name=q_project]').val();
+      if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
+        return false;
+      }
+      var para = "prjId=" + prjId + "&prjName=" + prjName;
+      window.open('/project/exportExcel?' + para, '_blank ')
     })
 
     ///////////////

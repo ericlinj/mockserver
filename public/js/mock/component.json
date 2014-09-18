@@ -16,6 +16,7 @@
     "ericlinj/jsoneditor": "*",
     "ericlinj/jsonminify": "*",
     "component/dialog": "*",
+    "heatroom/validate-form": "*",
     "ianstormtaylor/router": "*"
   }
 }
