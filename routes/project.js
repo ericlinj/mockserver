@@ -6,7 +6,7 @@ var util = require('./util');
 var logger = require('./log4js.js');
 var fs = require('fs');
 var XLSX = require('xlsx');
-var ExcelWriter = require('../models/export/excelWriter.js');
+var ExcelWriter = require('../models/excelExport/excelWriter.js');
 
 var utcTime = util.utcTime
 var memorize = util.memorize;
