@@ -19335,12 +19335,14 @@ exports.list = function(context, next) {
       });
     })
     //export pdf
-    $('.export-pdf').click(function(){
-      var prjName = $('select[name=q_project] option:checked').text();
-      if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
-        return false;
-      }
-      window.open('/project/exportExcel?project_name=' + prjName, '_blank')
+    $('.export-pdf').click(function() {
+        var prjName = $('select[name=q_project] option:checked').text();
+        var prjId = $('select[name=q_project]').val();
+        if (!confirm('确认导出项目' + prjName + '的接口文档？')) {
+          return false;
+        }
+        var para = "prjId=" + prjId + "&prjName=" + prjName;
+        window.open('/project/exportExcel?' + para , '_blank ')
     })
 
     ///////////////

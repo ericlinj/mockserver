@@ -6,7 +6,7 @@ var util = require('./util');
 var logger = require('./log4js.js');
 var fs = require('fs');
 var XLSX = require('xlsx');
-var ExcelWriter = require('../models/export/excelWriter');
+var ExcelWriter = require('../models/export/excelWriter.js');
 
 var utcTime = util.utcTime
 var memorize = util.memorize;
@@ -43,25 +43,56 @@ exports.ajaxList = function(req, res) {
 }
 
 exports.exportExcel = function(req, res) {
-  var prjName = req.param('project_name');
-  if (prjName) {
-    var fileName = 'interface-' + prjName + '.xlsx';
-    var filePath = 'export/excel/';
-    var fileUrl = filePath + fileName;
-    try {
-      XLSX.writeFile(ExcelWriter.getWorkbook(), fileUrl);
-    } catch (err) {
-      logger.error(err);
-      util.errorRender(res, err);
-    }
+  var prjName = req.param('prjName');
+  var prjId = req.param('prjId');
+  if (prjId) {
+    db.mock_detail.findAll({
+      include: [db.mock_project],
+      where: {
+        'mock_project.id': prjId
+      },
+      order: [
+        ['id', 'desc']
+      ]
+    })
+      .success(function(details) {
+        var excelData = [];
+        excelData.push(['id','标题','接口url','输入参数','输出json','备注']);
+        _.each(details, function(detail) {
+          var dataItem = [];
 
-    res.download(fileUrl, fileName, function(err) {
-      if (err) {
+          dataItem.push(detail.id);
+          dataItem.push(detail.title);
+          dataItem.push(detail.url);
+          dataItem.push(detail.para_json);
+          dataItem.push(detail.result_json);
+          dataItem.push(detail.remark);
+
+          excelData.push(dataItem);
+        })
+
+        var fileName = 'interface-' + prjName + '.xlsx';
+        var filePath = 'export/excel/';
+        var fileUrl = filePath + fileName;
+        var excelWriter = new ExcelWriter(prjName , excelData);
+        try {
+          XLSX.writeFile(excelWriter.getWorkbook(), fileUrl);
+        } catch (err) {
+          logger.error(err);
+          util.errorRender(res, err);
+        }
+
+        res.download(fileUrl, fileName, function(err) {
+          if (err) {
+            logger.error(err);
+            util.errorRender(res, err);
+          }
+        });
+      }).error(function(err) {
         logger.error(err);
-        util.errorRender(res, err);
-      }
-    });
-
+        util.errorRender(res, err.code);
+        return;
+      });
   } else {
     util.errorRender(res, "项目未指定");
   }
