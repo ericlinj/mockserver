@@ -1,7 +1,7 @@
 <% include header %>
 
 <div class="col-md-2 subnav-left">
-  <h3>新建接口</h3>
+  <h3>复制接口</h3>
 </div>
 
 
@@ -9,39 +9,43 @@
   <div class="container">
     <div class="job">
       <div class="col-md-10 layout-main">
-        <form id="mockadd-form" class="form-horizontal" action="/mock/doAdd" method="post">
-        <input type="hidden" name="mock_json" />
+        <form id="mockclone-form" class="form-horizontal" action="/mock/doClone" method="post">
+        <input type="hidden" name="mock_json" value="<%=detail.mock_json%>" />
+
         <div class="form-group">
             <label class="col-md-2 control-label">所属项目</label>
             <div class="col-md-5 ui-form-item">
-              <select name="project_id"> </select>
+              <select name="project_id" data_project_id="<%=detail.project_id%>">
+              </select>
+
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-2 control-label">接口标题</label>
             <div class="col-md-5 ui-form-item">
-              <input class="form-control" name="title" placeholder="请输入接口标题">
+              <input class="form-control" name="title" value="<%=detail.title%>" placeholder="请输入接口标题">
             </div>
             <div class="col-md-3">
-              <span class="form-group-tip">形如：搜索推广计划</span>
+              <span class="form-group-tip">*必填, <=100字符</span>
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-2 control-label">接口URL</label>
             <div class="col-md-5 ui-form-item">
-              <input class="form-control" name="url" placeholder="请输入接口URL">
+              <input class="form-control" name="url" value="<%=detail.url%>" placeholder="请输入接口URL">
             </div>
             <div class="col-md-3">
-              <span class="form-group-tip">形如：/plan/manage/create.do</span>
+              <span class="form-group-tip">*必填, <=100字符</span>
             </div>
           </div>
+
 
           <div class="form-group" >
             <label class="col-md-2 control-label">输入参数</label>
             <div class="col-md-5 ui-form-item" id="textarea-para-json">
-              <textarea class="form-control" rows="8" name="para_json"  placeholder="请输入‘输入参数’"></textarea>
+              <textarea class="form-control" rows="8" name="para_json" id="job_desc" placeholder="请输入‘输入参数’"><%=detail.para_json%></textarea>
             </div>
             <div class="col-md-3">
               <span class="form-group-tip">*必填, <=10000字符</span>
@@ -49,9 +53,11 @@
           </div>
 
           <div class="form-group" >
-            <label class="col-md-2 control-label">输出数据</label>
+            <label class="col-md-2 control-label">
+            输出数据
+            </label>
             <div class="col-md-7 ui-form-item" id="textarea-result-json">
-              <textarea  id="result_json" class="form-control" rows="8" name="result_json"  placeholder="请输入‘输出数据’"></textarea>
+              <textarea class="form-control" rows="8" name="result_json" id="result_json" placeholder="请输入‘输出数据’"><%=detail.result_json || ""%></textarea>
             </div>
             <div class="col-md-3">
               <span class="form-group-tip">*必填, <=10000字符</span>
@@ -71,10 +77,12 @@
             </div>
           </div>
 
+
+
           <div class="form-group" >
             <label class="col-md-2 control-label">备注</label>
             <div class="col-md-5 ui-form-item" id="textarea-remark">
-              <textarea class="form-control" rows="4" name="remark"  placeholder="请输入‘备注’"></textarea>
+              <textarea class="form-control" rows="4" name="remark"  placeholder="请输入‘备注’"><%=detail.remark%></textarea>
             </div>
             <div class="col-md-3">
               <span class="form-group-tip">*必填, <=1000字符</span>
@@ -85,8 +93,8 @@
             <label class="col-md-2 control-label">是否启动mock</label>
             <div class="col-md-5 ui-form-item">
               <select name="is_mock">
-                <option value="1">是</option>
-                <option value="0">否</option>
+                <option value="1" <%if (detail.is_mock == 1){%>selected<%}%> >是</option>
+                <option value="0" <%if (detail.is_mock == 0){%>selected<%}%>>否</option>
               </select>
 
             </div>
@@ -94,8 +102,8 @@
 
 
           <div class="form-group">
-            <div class="col-md-3 col-md-push-2">
-              <button id='btn-add-submit' type="button" class="ok btn btn-secondary">提 交</button>&nbsp;&nbsp;
+            <div class="col-md-5 col-md-push-2">
+              <button id='btn-clone-submit' type="button" class="ok btn btn-secondary">保存</button>&nbsp;&nbsp;
               <button type="reset" class="cancel btn btn-default">取 消</button>
             </div>
           </div>

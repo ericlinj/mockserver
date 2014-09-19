@@ -5,7 +5,6 @@ var moment = require('moment');
 var util = require('./util');
 var logger = require('./log4js.js');
 
-
 var utcTime = util.utcTime
 var memorize = util.memorize;
 var getTaskEndTime = util.getTaskEndTime;
@@ -75,7 +74,22 @@ exports.preEdit = function(req, res) {
       return;
     });
 };
-
+exports.preClone = function(req, res) {
+  db.mock_detail.find({
+    where: {
+      'id': req.param('id')
+    }
+  })
+    .success(function(detail) {
+      res.render('mockClone', {
+        detail: detail
+      })
+    }).error(function(err) {
+      logger.error(err);
+      util.errorRender(res, err.code);
+      return;
+    });
+};
 exports.doEdit = function(req, res) {
   var isStay = req.param('is_stay');
   db.mock_detail.update({
@@ -110,6 +124,29 @@ exports.doEdit = function(req, res) {
     } else {
       util.errorRender(res, err.code);
     }
+    return;
+  });
+};
+
+exports.doClone = function(req, res) {
+  db.mock_detail.create({
+    url: req.param('url') || '',
+    title: req.param('title') || '',
+    para_json: req.param('para_json') || '',
+    result_json: req.param('result_json') || '',
+    mock_json: req.param('mock_json') || '',
+    remark: req.param('remark') || '',
+    is_mock: req.param('is_mock') || '1',
+    project_id: req.param('project_id'),
+    creater: req.session.user.username,
+    create_time: utcTime(getNowYYYYMMDDHHmmss()),
+  }).success(
+    function() {
+      res.redirect('list')
+    }
+  ).error(function(err) {
+    logger.error(err);
+    util.errorRender(res, err.code);
     return;
   });
 };
@@ -177,5 +214,3 @@ exports.list = function(req, res) {
       return;
     });
 };
-
-

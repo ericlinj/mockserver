@@ -9,6 +9,7 @@ $(function() {
   new Mocker().start(function() {
     var router = new Router()
       .on('/mock/preAdd', Mock.preAdd)
+      .on('/mock/preClone/:id', Mock.preClone)
       .on('/mock/preEdit/:id', Mock.preEdit)
       .on('/mock/list', Mock.list)
       .on('/', Mock.list)

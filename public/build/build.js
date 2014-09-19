@@ -20623,6 +20623,41 @@ exports.preEdit = function(context, next) {
   })
 };
 
+exports.preClone = function(context, next) {
+  var me = this;
+  var selectedPrjId = $("select[name=project_id]").attr("data_project_id");
+  appUtil.initProjectSelect("project_id", selectedPrjId);
+  ///////cancel
+  $('.cancel').click(function() {
+    window.location.href = "/mock/list";
+  })
+
+  initJsonCheck();
+  initValidator($('#mockclone-form'));
+  try {
+    var json = $("input[name=mock_json]").val() || "{}";
+    jsonEditor.setText(json);
+  } catch (e) {
+    console.info(e)
+  }
+  $("#btn-clone-submit").click(function() {
+    try {
+      var mockJson = jsonEditor.getText();
+      $("input[name=mock_json]").val(mockJson);
+      $("input[name=is_stay]").val(0);
+
+      trimUrl();
+      me.validator.cb(function() {
+        $('#mockclone-form')[0].submit();
+      })
+    } catch (e) {
+      alert("mock数据错误：" + e);
+    }
+  })
+
+
+};
+
 function initJsonCheck() {
   var me = this;
   //////jsoncheck
@@ -20711,6 +20746,13 @@ exports.list = function(context, next) {
       window.open('/project/exportExcel?' + para, '_blank ')
     })
 
+    //clone
+    $('.cloneButton').click(function() {
+      var id = $(this).attr("data-id");
+      window.location.href = '/mock/preClone/'+id;
+    })
+
+
     ///////////////
 
   }
@@ -20729,6 +20771,7 @@ $(function() {
   new Mocker().start(function() {
     var router = new Router()
       .on('/mock/preAdd', Mock.preAdd)
+      .on('/mock/preClone/:id', Mock.preClone)
       .on('/mock/preEdit/:id', Mock.preEdit)
       .on('/mock/list', Mock.list)
       .on('/', Mock.list)

@@ -136,8 +136,10 @@ function dealPassport(req, res, next) {
 app.get('/', mock.list);
 app.get('/mock/preAdd', mock.preAdd);
 app.post('/mock/doAdd', mock.doAdd);
+app.post('/mock/doClone', mock.doClone);
 app.get('/mock/list', mock.list);
 app.get('/mock/preEdit/:id', mock.preEdit);
+app.get('/mock/preClone/:id', mock.preClone);
 app.post('/mock/doEdit', mock.doEdit);
 app.get('/mock/doDel', mock.doDel);
 
