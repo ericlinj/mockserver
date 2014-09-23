@@ -24,6 +24,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    timeout: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+    },
     remark: {
       type: DataTypes.TEXT,
       allowNull: true,

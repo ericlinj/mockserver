@@ -39,6 +39,7 @@
                 <th>输入</th>
                 <th>输出</th>
                 <th>是否mock</th>
+                <th>后台处理时长</th>
                 <th>创建时间</th>
                 <th>操作</th>
               </tr>
@@ -53,6 +54,7 @@
                 <td><%= item.para_json %></td>
                 <td><%= item.result_json %></td>
                 <td><%= item.is_mock_showStr %></td>
+                <td><%= item.timeout %></td>
                 <td><%= item.create_time_showStr %></td>
                 <td>
                       <input type="button" class="mockButton" data-url='<%=item.url%>' value="验证跨域与格式"  />

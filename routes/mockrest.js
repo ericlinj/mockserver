@@ -30,7 +30,7 @@ exports.doMock = function(req, res) {
         var mockJson = JSON.minify(mock_detail.mock_json || mock_detail.result_json);
         try {
           var mockJsonObj = JSON.parse(mockJson);
-          res.jsonp(mockJsonObj);
+          setTimeout(function(){res.jsonp(mockJsonObj);} , mock_detail.timeout || 0);
         } catch (e) {
           logger.error(e);
           res.jsonp({
