@@ -4,6 +4,7 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 var util = require('./util');
 var logger = require('./log4js.js');
+var snap = require('./snap.js');
 
 var utcTime = util.utcTime
 var memorize = util.memorize;
@@ -35,7 +36,7 @@ exports.preAdd = function(req, res) {
 };
 
 exports.doAdd = function(req, res) {
-  db.mock_detail.create({
+  var detail = {
     url: req.param('url') || '',
     title: req.param('title') || '',
     para_json: req.param('para_json') || '',
@@ -45,17 +46,21 @@ exports.doAdd = function(req, res) {
     remark: req.param('remark') || '',
     is_mock: req.param('is_mock') || '1',
     project_id: req.param('project_id'),
-    creater: req.session.user.username,
-    create_time: utcTime(getNowYYYYMMDDHHmmss()),
-  }).success(
-    function() {
+    create_time: utcTime(getNowYYYYMMDDHHmmss())
+  };
+  db.mock_detail.create(detail).success(
+    function(detailRecord) {
+      snap.record(detailRecord.id,
+        detailRecord.title, detailRecord.url,
+        detailRecord.para_json, detailRecord.result_json,
+        detailRecord.remark, req.session.user.username);
       res.redirect('list')
     }
   ).error(function(err) {
     logger.error(err);
     util.errorRender(res, err.code);
     return;
-  });;
+  });
 };
 
 exports.preEdit = function(req, res) {
@@ -108,6 +113,22 @@ exports.doEdit = function(req, res) {
     'id': req.param('id')
   }).success(
     function() {
+      ///////////////////////get newest record to snap
+      db.mock_detail.find({
+        where: {
+          'id': req.param('id')
+        }
+      })
+        .success(function(detailRecord) {
+          snap.record(detailRecord.id,
+            detailRecord.title, detailRecord.url,
+            detailRecord.para_json, detailRecord.result_json,
+            detailRecord.remark, req.session.user.username);
+        }).error(function(err) {
+          logger.error(err);
+          return;
+        });
+      ///////////////
       if (isStay && parseInt(isStay, 10) === 1) {
         res.json({
           status: 1
@@ -144,7 +165,11 @@ exports.doClone = function(req, res) {
     creater: req.session.user.username,
     create_time: utcTime(getNowYYYYMMDDHHmmss()),
   }).success(
-    function() {
+    function(detailRecord) {
+      snap.record(detailRecord.id,
+        detailRecord.title, detailRecord.url,
+        detailRecord.para_json, detailRecord.result_json,
+        detailRecord.remark, req.session.user.username);
       res.redirect('list')
     }
   ).error(function(err) {

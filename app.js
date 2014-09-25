@@ -22,6 +22,7 @@ var routes = require('./routes');
 var mock = require('./routes/mock');
 var project = require('./routes/project');
 var mockrest = require('./routes/mockrest');
+var snap = require('./routes/snap');
 var util = require('./routes/util');
 // load global config
 var yaml = require('node-yaml-config');
@@ -132,7 +133,8 @@ function dealPassport(req, res, next) {
   }
 }
 
-//logic routers
+//////////////////////logic routers
+//mock
 app.get('/', mock.list);
 app.get('/mock/preAdd', mock.preAdd);
 app.post('/mock/doAdd', mock.doAdd);
@@ -143,6 +145,10 @@ app.get('/mock/preClone/:id', mock.preClone);
 app.post('/mock/doEdit', mock.doEdit);
 app.get('/mock/doDel', mock.doDel);
 
+//snap
+app.post('/snap/diff', snap.diff);
+
+//project
 app.get('/project/preAdd', project.preAdd);
 app.post('/project/doAdd', project.doAdd);
 app.get('/project/doDel', project.doDel);

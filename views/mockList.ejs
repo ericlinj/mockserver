@@ -60,6 +60,7 @@
                       <input type="button" class="mockButton" data-url='<%=item.url%>' value="验证跨域与格式"  />
                       <input type="button" class="delButton" data-id='<%=item.id%>' value="删除"  />
                       <input type="button" class="cloneButton" data-id='<%=item.id%>' value="复制"  />
+                      <input type="button" class="diffButton" data-id='<%=item.id%>' value="diff最近修改"  />
                     </td>
               </tr>
               <% }) %>
@@ -67,6 +68,7 @@
             </tbody>
           </table>
           <div id="mockjson"></div>
+          <div id="diffDiv"></div>
           <% } else { %>
           <p>没有数据</p>
           <% } %>

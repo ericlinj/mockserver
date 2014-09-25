@@ -144,7 +144,6 @@ exports.preClone = function(context, next) {
     }
   })
 
-
 };
 
 function initJsonCheck() {
@@ -185,6 +184,7 @@ exports.list = function(context, next) {
   if (container) {
     //dialog
     me.showDialog = new Dialog("跨域mockrest验证", container).closable();
+    me.showDiffDialog = new Dialog("diff最近修改", document.getElementById('diffDiv')).closable();
     //jsonEditor
     var jsonEditor = new JsonEditor(container, {
       mode: "view"
@@ -198,6 +198,25 @@ exports.list = function(context, next) {
           jsonEditor.set(data);
           me.showDialog.show();
 
+        }
+      });
+    });
+    /////////diff
+    $(".diffButton").click(function() {
+      var diffId = $(this).attr("data-id");
+      $.ajax({
+        type: "POST",
+        data: {
+          id: diffId
+        },
+        url: "/snap/diff",
+        success: function(data) {
+          if (parseInt(data.status, 10) === 1) {
+            me.showDiffDialog.show();
+            $("#diffDiv").html(data.diffHtml);
+          } else {
+            alert("出错了：" + data.msg);
+          }
         }
       });
     });
@@ -238,9 +257,8 @@ exports.list = function(context, next) {
     //clone
     $('.cloneButton').click(function() {
       var id = $(this).attr("data-id");
-      window.location.href = '/mock/preClone/'+id;
+      window.location.href = '/mock/preClone/' + id;
     })
-
 
     ///////////////
 
