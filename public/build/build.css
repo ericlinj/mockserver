@@ -739,6 +739,14 @@
 
 .mine-pl10{padding-left: 10px;}
 .mine-ml10{margin-left: 10px;}
+#diffDiv,#mockjson{
+  height: 300px;
+  overflow-y: scroll;
+}
+
+.dialog .title{
+  background-color: #f2f2f2;
+}
 
 .jsondiffpatch-delta {
   font-family: 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Courier, monospace;

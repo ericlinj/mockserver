@@ -40,6 +40,42 @@ function initValidator(jqForm) {
     .field('url')
     .is('required', '请输入接口URL！')
     .is('maxLength', 255, '接口URL名称超长！')
+    .field('para_json')
+    .is('required', '请输入内容')
+    .is(function(val) {
+      var minifyJson = jsonMinify.minify(val);
+      try {
+        JSON.parse(minifyJson);
+      } catch (e) {
+        console.info(e + "===[" + minifyJson + "]");
+        return false;
+      }
+      return true;
+    }, "输入内容（剔除空格、换行与注释后）不符合json格式！")
+    .field('result_json')
+    .is('required', '请输入内容')
+    .is(function(val) {
+      var minifyJson = jsonMinify.minify(val);
+      try {
+        JSON.parse(minifyJson);
+      } catch (e) {
+        console.info(e + "===[" + minifyJson + "]");
+        return false;
+      }
+      return true;
+    }, "输入内容（剔除空格、换行与注释后）不符合json格式！")
+    .field('mock_json')
+    .is('required', '请输入内容')
+    .is(function(val) {
+      var minifyJson = jsonMinify.minify(val);
+      try {
+        JSON.parse(minifyJson);
+      } catch (e) {
+        console.info(e + "===[" + minifyJson + "]");
+        return false;
+      }
+      return true;
+    }, "输入内容（剔除空格、换行与注释后）不符合json格式！")
     .field('result_json')
     .is('required', '请输入“输出参数”！');
 }
@@ -166,8 +202,9 @@ function initJsonCheck() {
     try {
       var minifyJson = jsonMinify.minify($("#result_json").val());
       jsonEditor.setText(minifyJson);
+      alert("导入成功")
     } catch (e) {
-      alert("导入失败，minifyJson:" + minifyJson)
+      alert(minifyJson + "===[" + e + "]");
       console.info(e);
     }
   })
