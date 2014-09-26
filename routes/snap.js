@@ -98,17 +98,24 @@ exports.diff = function(req, res) {
     .success(function(details) {
       var diffHtml = "no diff";
       if (details && details.length === 2) {
+        var newestGuy = details[0];
         var left = JSON.parse(details[0].dataValues.content);
         var right = JSON.parse(details[1].dataValues.content);
         try {
           var delta = jsondiffpatch.diff(right, left);
           diffHtml = Jsondiffpatch.formatters.html.format(delta, left);
-          logger.info(diffHtml)
+          //add intro content
+          diffHtml = '<div class="“diff-intro">['
+          + newestGuy.creater + ']于【'
+          + new moment(utcTime(newestGuy.create_time)).format('YYYY-MM-DD HH:mm:ss')
+          +'】修改如下内容：</div>'
+          +diffHtml;
         } catch (e) {
           logger.error(e);
           diffHtml = e;
         }
       }
+
       res.json({
         "status": 1,
         "diffHtml": diffHtml
