@@ -198,7 +198,7 @@ db.sequelize.sync({
     throw err;
   } else {
     app.listen(app.get('port'), function(e) {
-      logger.info('Express server start success and listening on port [' + app.get('port') + '] in [' + app.get("env") + '] mode.');
+      logger.info('Express server start success ! listening on port [' + app.get('port') + '] in [' + app.get("env") + '] mode.');
     });
   }
 });
