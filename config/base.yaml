@@ -10,7 +10,7 @@ default:
       development: 'DEBUG'
       production: 'ERROR'
 
-  mocker_server_host: 'mockserver.sogou-inc.com'
+  mocker_server_host: 'stars.ba.sogou-inc.com'
   mocker_server_prefix: 'mockrest'
   mocker_project_id: -1
 
