@@ -127,7 +127,7 @@ function dealPassport(req, res, next) {
       }
     });
   } else {
-    var err = new Error('not allowed!');
+    var err = new Error(req.url+':not allowed!');
     err.status = 403;
     next(err);
   }
