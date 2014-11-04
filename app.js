@@ -100,7 +100,7 @@ if ('development' === env) {
 
 //mockrest请求不限制jpassport
 function isMockRest(req) {
-  req.url.indexOf('mockrest') != -1
+  return req.url.indexOf('mockrest') != -1;
 }
 
 function dealPassport(req, res, next) {
@@ -127,7 +127,7 @@ function dealPassport(req, res, next) {
       }
     });
   } else {
-    var err = new Error(req.url+':not allowed!');
+    var err = new Error('not allowed!');
     err.status = 403;
     next(err);
   }
