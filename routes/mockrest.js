@@ -83,7 +83,7 @@ exports.initMockContext = function (req, res) {
             + 'window.mocker_server_prefix = "' + global.CONFIG.mocker_server_prefix + '";'
             + 'window.mocker_project_id = ' + prjId + ';';
         console.info(EJS.renderFile(
-            './public/components/ericlinj-mocker/build/build.js',
+            './views/js/mocker.js',
             function (err, data) {
                 if (err) logger.error(err)
                 contextScript += data;
