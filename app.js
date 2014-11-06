@@ -169,6 +169,7 @@ app.get('/md/intro', function(req, res) {
 
 //////////////外部接口调用
 app.get('/mockrest/initMockContext', mockrest.initMockContext);
+app.get('/mockrest/mocker.js', mockrest.initMockContext);
 app.get('/mockrest/getMockDetails', mockrest.getMockDetails);
 app.get('/mockrest/*', mockrest.doMock);
 
@@ -183,6 +184,7 @@ app.get('*', function(req, res) {
 //500 Error Handler.
 app.use(function(err, req, res, next) {
   logger.error("Something went wrong: " + err);
+    throw err;
   res.render('500', {
     status: err.status || 500,
     error: err
