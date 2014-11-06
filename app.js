@@ -169,7 +169,7 @@ app.get('/md/intro', function(req, res) {
 
 //////////////外部接口调用
 app.get('/mockrest/initMockContext', mockrest.initMockContext);
-app.get('/mockrest/mocker.js', mockrest.initMockContext);
+app.get('/mockrest/initMockContextStandAlone', mockrest.initMockContextStandAlone);
 app.get('/mockrest/getMockDetails', mockrest.getMockDetails);
 app.get('/mockrest/*', mockrest.doMock);
 
